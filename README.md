@@ -1,0 +1,4 @@
+libmodam
+========
+
+Amiga .MOD library
