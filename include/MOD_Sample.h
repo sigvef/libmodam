@@ -1,6 +1,7 @@
 #ifndef MOD_SAMPLE_H
 #define MOD_SAMPLE_H
 
+#include <stdio.h>
 #include <stdint.h>
 
 typedef struct {
@@ -12,5 +13,10 @@ typedef struct {
     int16_t repeat_length;
     int8_t* data;
 } MOD_Sample;
+
+
+MOD_Sample* MOD_Sample_load(FILE*fp);
+void MOD_Sample_loadData(MOD_Sample* s, FILE*fp);
+void MOD_Sample_free(MOD_Sample* s);
 
 #endif

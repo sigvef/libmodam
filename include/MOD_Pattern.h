@@ -4,7 +4,9 @@
 #include "MOD_PatternDivision.h"
 
 typedef struct{
-    MOD_PatternDivision divisions[64];
+    MOD_PatternDivision* divisions[64];
 } MOD_Pattern;
+
+MOD_Pattern* MOD_Pattern_load(FILE*fp);
 
 #endif
