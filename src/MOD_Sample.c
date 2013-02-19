@@ -4,7 +4,7 @@
 #include "utils.h"
 
 MOD_Sample* MOD_Sample_load(FILE*fp){
-    printf("MOD_Sample_load(fp: %p)\n", fp);
+
     MOD_Sample* sample = (MOD_Sample*) malloc(sizeof(MOD_Sample));
 
     for(int i=0;i<22;i++){
@@ -17,12 +17,11 @@ MOD_Sample* MOD_Sample_load(FILE*fp){
     sample->repeat_offset = MOD_utils_read16(fp);
     sample->repeat_length = MOD_utils_read16(fp);
 
-    printf("<--\n");
     return sample;
 }
 
 void MOD_Sample_loadData(MOD_Sample* sample, FILE*fp){
-    printf("MOD_Sample_loadData(sample: %p, fp: %p)\n", sample, fp);
+    sample->data = (int8_t*) malloc(sizeof(int8_t)*sample->length);
     for(int i=0;i<sample->length;i++){
         sample->data[i] = fgetc(fp);
     }

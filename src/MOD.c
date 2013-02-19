@@ -6,7 +6,6 @@
 
 
 MOD* MOD_load(const char* filename){
-    printf("MOD_load(filename: %s)\n", filename);
 
     MOD* mod = (MOD*) malloc(sizeof(MOD));
 
@@ -17,13 +16,15 @@ MOD* MOD_load(const char* filename){
         mod->title[i] = fgetc(fp);
     }
 
+    printf("The title is: %.20s\n", mod->title);
+
     /* for now we assume there are always 31 samples. Later,
      * it is probably wise to check for the magic letters. */
     mod->n_samples = 31;
 
     /* read the samples */
     mod->samples = (MOD_Sample**) malloc(sizeof(MOD_Sample)*mod->n_samples);
-    for(int i=1;i<mod->n_samples;i++){
+    for(int i=0;i<mod->n_samples;i++){
         mod->samples[i] = MOD_Sample_load(fp);
     }
 
@@ -39,18 +40,16 @@ MOD* MOD_load(const char* filename){
         mod->magic_letters[i] = fgetc(fp); /* usually "M.K." */
     }
 
-
     mod->patterns = (MOD_Pattern**) malloc(sizeof(MOD_Pattern)*128);
     for(int i=0;i<128;i++){
         mod->patterns[i] = MOD_Pattern_load(fp);
     }
 
-    for(int i=1;i<mod->n_samples;i++){
+    for(int i=0;i<mod->n_samples;i++){
         MOD_Sample_loadData(mod->samples[i], fp);
     }
 
     fclose(fp);
 
-    printf("<--\n");
     return mod;
 }
