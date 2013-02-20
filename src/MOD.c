@@ -5,15 +5,13 @@
 #include "MOD_Pattern.h"
 
 
-MOD* MOD_load(const char* filename){
+MOD* MOD_load(int8_t* data){
 
     MOD* mod = (MOD*) malloc(sizeof(MOD));
 
-    FILE* fp = fopen(filename, "r");
-
     /* read the title */
     for(int i=0;i<20;i++){
-        mod->title[i] = fgetc(fp);
+        mod->title[i] = *data++;
     }
 
     printf("The title is: %.20s\n", mod->title);
@@ -25,31 +23,29 @@ MOD* MOD_load(const char* filename){
     /* read the samples */
     mod->samples = (MOD_Sample**) malloc(sizeof(MOD_Sample)*mod->n_samples);
     for(int i=0;i<mod->n_samples;i++){
-        mod->samples[i] = MOD_Sample_load(fp);
+        mod->samples[i] = MOD_Sample_load(data);
     }
 
-    mod->n_song_positions = fgetc(fp);
+    mod->n_song_positions = *data++;
 
-    mod->historical_127 = fgetc(fp);
+    mod->historical_127 = *data++;
 
     for(int i=0;i<128;i++){
-        mod->pattern_table[i] = fgetc(fp);
+        mod->pattern_table[i] = *data++;
     }
 
     for(int i=0;i<4;i++){
-        mod->magic_letters[i] = fgetc(fp); /* usually "M.K." */
+        mod->magic_letters[i] = *data++; /* usually "M.K." */
     }
 
     mod->patterns = (MOD_Pattern**) malloc(sizeof(MOD_Pattern)*128);
     for(int i=0;i<128;i++){
-        mod->patterns[i] = MOD_Pattern_load(fp);
+        mod->patterns[i] = MOD_Pattern_load(data);
     }
 
     for(int i=0;i<mod->n_samples;i++){
-        MOD_Sample_loadData(mod->samples[i], fp);
+        MOD_Sample_loadData(mod->samples[i], data);
     }
-
-    fclose(fp);
 
     return mod;
 }

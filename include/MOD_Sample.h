@@ -15,8 +15,8 @@ typedef struct {
 } MOD_Sample;
 
 
-MOD_Sample* MOD_Sample_load(FILE*fp);
-void MOD_Sample_loadData(MOD_Sample* s, FILE*fp);
+MOD_Sample* MOD_Sample_load(int8_t *data);
+void MOD_Sample_loadData(MOD_Sample* s, int8_t *data);
 void MOD_Sample_free(MOD_Sample* s);
 
 #endif

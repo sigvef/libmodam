@@ -19,7 +19,7 @@ typedef struct {
     int8_t n_patterns;
 } MOD;
 
-MOD* MOD_load(const char* filename);
+MOD* MOD_load(int8_t *data);
 void MOD_free(MOD*mod);
 
 #endif

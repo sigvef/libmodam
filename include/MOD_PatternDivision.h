@@ -7,5 +7,5 @@ typedef struct {
     MOD_Channel* channels[4];
 } MOD_PatternDivision;
 
-MOD_PatternDivision* MOD_PatternDivision_load(FILE*fp);
+MOD_PatternDivision* MOD_PatternDivision_load(int8_t *data);
 #endif
