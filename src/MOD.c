@@ -5,7 +5,9 @@
 #include "MOD_Pattern.h"
 
 
-MOD* MOD_load(int8_t* data){
+MOD* MOD_load(int8_t* _data){
+
+    int8_t* data = _data;
 
     MOD* mod = (MOD*) malloc(sizeof(MOD));
 
@@ -14,8 +16,6 @@ MOD* MOD_load(int8_t* data){
         mod->title[i] = *data++;
     }
 
-    printf("The title is: %.20s\n", mod->title);
-
     /* for now we assume there are always 31 samples. Later,
      * it is probably wise to check for the magic letters. */
     mod->n_samples = 31;
@@ -23,7 +23,7 @@ MOD* MOD_load(int8_t* data){
     /* read the samples */
     mod->samples = (MOD_Sample**) malloc(sizeof(MOD_Sample)*mod->n_samples);
     for(int i=0;i<mod->n_samples;i++){
-        mod->samples[i] = MOD_Sample_load(data);
+        mod->samples[i] = MOD_Sample_load(&data);
     }
 
     mod->n_song_positions = *data++;
@@ -40,11 +40,11 @@ MOD* MOD_load(int8_t* data){
 
     mod->patterns = (MOD_Pattern**) malloc(sizeof(MOD_Pattern)*128);
     for(int i=0;i<128;i++){
-        mod->patterns[i] = MOD_Pattern_load(data);
+        mod->patterns[i] = MOD_Pattern_load(&data);
     }
 
     for(int i=0;i<mod->n_samples;i++){
-        MOD_Sample_loadData(mod->samples[i], data);
+        MOD_Sample_loadData(mod->samples[i], &data);
     }
 
     return mod;

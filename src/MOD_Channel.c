@@ -2,13 +2,13 @@
 #include <stdlib.h>
 #include "MOD_Channel.h"
 
-MOD_Channel* MOD_Channel_load(int8_t *data){
+MOD_Channel* MOD_Channel_load(int8_t **data){
     MOD_Channel* channel = (MOD_Channel*) malloc(sizeof(MOD_Channel));
 
-    int8_t a = *data++;
-    int8_t b = *data++;
-    int8_t c = *data++;
-    int8_t d = *data++;
+    int8_t a = *(*data)++;
+    int8_t b = *(*data)++;
+    int8_t c = *(*data)++;
+    int8_t d = *(*data)++;
 
     /* hope this is correct! :D */
     channel->sample  = (a & 0xf0) | ((c&0x3c)>>2);

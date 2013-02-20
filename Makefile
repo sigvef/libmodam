@@ -1,4 +1,6 @@
 all:
+	gcc -std=c99 -c src/Player.c -Iinclude -o obj/utils.o -g
+	gcc -std=c99 -c src/Player_Channel.c -Iinclude -o obj/utils.o -g
 	gcc -std=c99 -c src/MOD.c -Iinclude -o obj/MOD.o -g
 	gcc -std=c99 -c src/MOD_Sample.c -Iinclude -o obj/MOD_Sample.o -g
 	gcc -std=c99 -c src/MOD_Pattern.c -Iinclude -o obj/MOD_Pattern.o -g

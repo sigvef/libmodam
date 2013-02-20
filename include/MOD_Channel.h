@@ -9,6 +9,6 @@ typedef struct {
     int16_t effect;
 } MOD_Channel;
 
-MOD_Channel* MOD_Channel_load(int8_t *data);
+MOD_Channel* MOD_Channel_load(int8_t **data);
 
 #endif

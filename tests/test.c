@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include "MOD.h"
+#include "Player.h"
 
 int main(){
 
@@ -19,6 +20,12 @@ int main(){
     fclose(fp);
 
     MOD* mod = MOD_load(buffer);
+
+    free(buffer);
+
+    MOD_Player* player = MOD_Player_create();
+
+    MOD_Player_play(player, mod);
 
     return 0;
 }
