@@ -10,6 +10,7 @@ typedef struct{
     int song_position;
     int active_division;
     int ticks_per_division;
+    double sample_rate;
 } MOD_Player;
 
 MOD_Player* MOD_Player_create();
