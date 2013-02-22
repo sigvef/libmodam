@@ -10,7 +10,6 @@ MOD_Channel* MOD_Channel_load(int8_t **data){
     uint8_t c = *(*data)++;
     uint8_t d = *(*data)++;
 
-    /* hope this is correct! :D */
     channel->sample  = (a & 0xf0) | ((c&0xf0)>>4);
     channel->sample_period = ((a&0x0f)<<8) | b;
     channel->effect =  ((c&0x0f)<<8) | d;
