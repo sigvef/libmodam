@@ -1,6 +1,6 @@
 all:
-	gcc -std=c99 -c src/Player.c -Iinclude -o obj/utils.o -g
-	gcc -std=c99 -c src/Player_Channel.c -Iinclude -o obj/utils.o -g
+	gcc -std=c99 -c src/Player.c -Iinclude -o obj/Player.o -g
+	gcc -std=c99 -c src/Player_Channel.c -Iinclude -o obj/Player_Channel.o -g
 	gcc -std=c99 -c src/MOD.c -Iinclude -o obj/MOD.o -g
 	gcc -std=c99 -c src/MOD_Sample.c -Iinclude -o obj/MOD_Sample.o -g
 	gcc -std=c99 -c src/MOD_Pattern.c -Iinclude -o obj/MOD_Pattern.o -g
@@ -12,6 +12,10 @@ all:
 test: all
 	gcc -std=c99 tests/test.c -o bin/test -Iinclude -Llib -lmodam -g
 	bin/test
+
+play: all
+	gcc -std=c99 tests/test.c -o bin/test -Iinclude -Llib -lmodam -g
+	bin/test | aplay -r 44100Hz
 
 clean:
 	rm bin/*
