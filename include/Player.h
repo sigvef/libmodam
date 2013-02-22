@@ -6,7 +6,7 @@
 
 typedef struct{
     MOD_Player_Channel* channels[4];
-    long tick;
+    double tick;
     int song_position;
     int active_division;
     int ticks_per_division;
