@@ -19,6 +19,7 @@ MOD_Player_Channel* MOD_Player_Channel_create(){
     channel->vibrato_period = 0;
     channel->vibrato_tick = 0;
     channel->volume_speed = 0;
+    channel->volume = 64;
     return channel;
 }
 
@@ -28,6 +29,7 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
         channel->sample = player_channel->old_sample;
         channel->sample_period = player_channel->old_period;
     }
+
 
     double sample_period = channel->sample_period;
 
@@ -56,8 +58,10 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
             player_channel->vibrato_tick++;
             break;
         case EFFECT_CONTINUE_SLIDE_TO_NOTE_AND_VOLUME_SLIDE:
+            //player_channel->volume_speed =  x == 0 ? -y : x;
             break;
         case EFFECT_CONTINUE_VIBRATO_TO_NOTE_AND_VOLUME_SLIDE:
+            //player_channel->volume_speed =  x == 0 ? -y : x;
             player_channel->vibrato_tick++;
             break;
         case EFFECT_TREMOLO:
@@ -67,10 +71,13 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
         case EFFECT_SET_SAMPLE_OFFSET:
             break;
         case EFFECT_VOLUME_SLIDE:
+            player_channel->volume_speed =  x == 0 ? -y : x;
             break;
         case EFFECT_POSITION_JUMP:
             break;
         case EFFECT_SET_VOLUME:
+            //player_channel->volume_speed =  0;
+            //player_channel->volume =  (x<<4) | y;
             break;
         case EFFECT_PATTERN_BREAK:
             break;
@@ -106,6 +113,11 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
 
     sample_period /= modifier;
 
+
+    player_channel->volume += player_channel->volume_speed;
+    player_channel->volume = MAX(player_channel->volume, 0);
+    player_channel->volume = MIN(player_channel->volume, 64);
+
     double out;
     if(channel->sample != 0){
         MOD_Sample* sample = mod->samples[channel->sample-1];
@@ -135,7 +147,7 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
             int next_byte = sample->data[(di_next)];
             double progress = player_channel->tick/thr;
             progress = 0;
-            out = LARP(current_byte, next_byte, progress) * sample->volume*0.5;
+            out = LARP(current_byte, next_byte, progress) * sample->volume*0.5 * player_channel->volume/64.;
         }else{
             out = 0;
         }

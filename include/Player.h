@@ -19,6 +19,8 @@ typedef struct {
     double vibrato_amplitude;
     double vibrato_period;
     long vibrato_tick;
+    int volume_speed;
+    int volume;
 } MOD_Player_Channel;
 
 typedef struct{
