@@ -61,7 +61,7 @@ uint8_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
                     speed = (24 * speed)/6;
                 }
 
-                //player->ticks_per_division = speed;  
+                player->ticks_per_division = speed;  
                 break;
             default:
                 break;
@@ -79,19 +79,19 @@ uint8_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
             player_channel->old_sample = channel->sample;
             player_channel->old_period = channel->sample_period;
 
-            double thr = channel->sample_period/3500000.*player_channel->sample_rate*2;
+            double thr = channel->sample_period/3500000.*player_channel->sample_rate;
 
             while(player_channel->tick > thr){
                 player_channel->tick -= thr;
                 player_channel->sample_tracker++;
-                if(mod->samples[channel->sample-1]->repeat_length > 1){
-                    while(player_channel->sample_tracker >= mod->samples[channel->sample-1]->length){
-                        player_channel->sample_tracker -= mod->samples[channel->sample-1]->repeat_length; 
+                if(mod->samples[channel->sample-1]->repeat_length*2 > 1){
+                    while(player_channel->sample_tracker >= mod->samples[channel->sample-1]->length*2){
+                        player_channel->sample_tracker -= mod->samples[channel->sample-1]->repeat_length*2; 
                     }
                 }
             }
 
-            out = player_channel->sample_tracker < mod->samples[channel->sample-1]->length ? (127+(uint8_t)mod->samples[channel->sample-1]->data[((int)player_channel->sample_tracker)%mod->samples[channel->sample-1]->length]) : 127;
+            out = player_channel->sample_tracker < mod->samples[channel->sample-1]->length*2 ? (127+(uint8_t)mod->samples[channel->sample-1]->data[((int)player_channel->sample_tracker)%mod->samples[channel->sample-1]->length*2]) : 127;
         }else{
             out = 127;
         }

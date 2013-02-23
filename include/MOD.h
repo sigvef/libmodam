@@ -22,8 +22,6 @@
 #define EFFECT_EXTRAS 14
 #define EFFECT_SET_SPEED 15
 
-
-
 /* http://www.mediatel.lu/workshop/audio/fileformat/h_mod.html */
 
 typedef struct {

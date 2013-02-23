@@ -21,6 +21,8 @@ void MOD_Player_play(MOD_Player* player, MOD*mod){
     MOD_Player_Channel* c2 = MOD_Player_Channel_create();
     MOD_Player_Channel* c3 = MOD_Player_Channel_create();
 
+    double tickticker = 0;
+    double tickticker_threshold = 35000000/player->sample_rate;
 
     while(1){
 
@@ -30,13 +32,17 @@ void MOD_Player_play(MOD_Player* player, MOD*mod){
         out += MOD_Player_Channel_step(c0, player, mod, pattern_division->channels[0])*0.23;
         out += MOD_Player_Channel_step(c1, player, mod, pattern_division->channels[1])*0.23;
         out += MOD_Player_Channel_step(c2, player, mod, pattern_division->channels[2])*0.23;
-        out += MOD_Player_Channel_step(c3, player, mod, pattern_division->channels[3])*0.3;
+        out += MOD_Player_Channel_step(c3, player, mod, pattern_division->channels[3])*0.23;
         putchar(out);
 
-        player->tick++;
-        double song_thr = player->sample_rate/8;
-        while(player->tick > song_thr){
-            player->tick -= song_thr;
+        tickticker++;
+        while(tickticker > tickticker_threshold){
+            tickticker -= tickticker_threshold;
+            player->tick++;
+        }
+
+        while(player->tick > player->ticks_per_division){
+            player->tick -= player->ticks_per_division;
             player->active_division++;
             if(player->active_division > 63){
                 player->active_division = 0;
