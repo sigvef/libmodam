@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "MOD.h"
+#include <math.h>
 #include "MOD_Channel.h"
 #include "Player.h"
 
@@ -15,12 +16,25 @@ MOD_Player_Channel* MOD_Player_Channel_create(){
 
 uint8_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod, MOD_Channel* channel){
 
+        if(channel->sample == 0){
+            channel->sample = player_channel->old_sample;
+            channel->sample_period = player_channel->old_period;
+        }
+
+        int sample_period = channel->sample_period;
+
         int e = (channel->effect&0xf00) >> 8;
         int x = (channel->effect&0x0f0) >> 4;
         int y =  channel->effect&0x00f;
+
         switch(e){
+
             case EFFECT_ARPEGGIO:
+                ;int step = (int)(3*player->tick/player->ticks_per_division);
+                if(step == 1){ sample_period *= 1/pow(2, x/12.);}
+                if(step == 2){ sample_period *= 1/pow(2, y/12.);}
                 break;
+
             case EFFECT_SLIDE_UP:
                 break;
             case EFFECT_SLIDE_DOWN:
@@ -68,10 +82,6 @@ uint8_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
         }
 
         uint8_t out;
-        if(channel->sample == 0){
-            channel->sample = player_channel->old_sample;
-            channel->sample_period = player_channel->old_period;
-        }
         if(channel->sample != 0){
             if(player_channel->old_sample != channel->sample){
                 player_channel->sample_tracker = 0;
@@ -79,7 +89,7 @@ uint8_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
             player_channel->old_sample = channel->sample;
             player_channel->old_period = channel->sample_period;
 
-            double thr = channel->sample_period/3500000.*player_channel->sample_rate;
+            double thr = sample_period/3500000.*player_channel->sample_rate;
 
             while(player_channel->tick > thr){
                 player_channel->tick -= thr;

@@ -14,7 +14,7 @@ test: all
 	bin/test
 
 play: all
-	gcc -std=c99 tests/test.c -o bin/test -Iinclude -Llib -lmodam -g
+	gcc -std=c99 tests/test.c -o bin/test -Iinclude -Llib -lmodam -g -lm
 	bin/test | aplay -r 44100Hz
 
 clean:

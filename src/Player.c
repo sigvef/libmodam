@@ -29,10 +29,10 @@ void MOD_Player_play(MOD_Player* player, MOD*mod){
         pattern_division = mod->patterns[mod->pattern_table[player->song_position]]->divisions[player->active_division];
 
         uint8_t out = 0;
-        out += MOD_Player_Channel_step(c0, player, mod, pattern_division->channels[0])*0.23;
-        out += MOD_Player_Channel_step(c1, player, mod, pattern_division->channels[1])*0.23;
-        out += MOD_Player_Channel_step(c2, player, mod, pattern_division->channels[2])*0.23;
-        out += MOD_Player_Channel_step(c3, player, mod, pattern_division->channels[3])*0.23;
+        out += MOD_Player_Channel_step(c0, player, mod, pattern_division->channels[0])*0.20;
+        out += MOD_Player_Channel_step(c1, player, mod, pattern_division->channels[1])*0.20;
+        out += MOD_Player_Channel_step(c2, player, mod, pattern_division->channels[2])*0.20;
+        out += MOD_Player_Channel_step(c3, player, mod, pattern_division->channels[3])*0.20;
         putchar(out);
 
         tickticker++;
