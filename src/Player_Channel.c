@@ -128,7 +128,7 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
         player_channel->old_sample = channel->sample;
         player_channel->old_period = channel->sample_period;
 
-        double thr = sample_period/3500000.*player_channel->sample_rate;
+        double thr = sample_period/(double)AMIGA_FREQUENCY*player_channel->sample_rate;
 
         while(player_channel->tick > thr){
             player_channel->tick -= thr;
