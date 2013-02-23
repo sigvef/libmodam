@@ -15,7 +15,7 @@ MOD_Player_Channel* MOD_Player_Channel_create(){
     return channel;
 }
 
-uint8_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod, MOD_Channel* channel){
+double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod, MOD_Channel* channel){
 
     if(channel->sample == 0){
         channel->sample = player_channel->old_sample;
@@ -82,8 +82,10 @@ uint8_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
             break;
     }
 
-    uint8_t out;
+    double out;
     if(channel->sample != 0){
+        MOD_Sample* sample = mod->samples[channel->sample-1];
+
         if(player_channel->old_sample != channel->sample){
             player_channel->sample_tracker = 0;
         }
@@ -95,26 +97,26 @@ uint8_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
         while(player_channel->tick > thr){
             player_channel->tick -= thr;
             player_channel->sample_tracker++;
-            if(mod->samples[channel->sample-1]->repeat_length*2 > 1){
-                while(player_channel->sample_tracker >= mod->samples[channel->sample-1]->length*2){
-                    player_channel->sample_tracker -= mod->samples[channel->sample-1]->repeat_length*2; 
+            if(sample->repeat_length*2 > 1){
+                while(player_channel->sample_tracker >= sample->length*2){
+                    player_channel->sample_tracker -= sample->repeat_length*2; 
                 }
             }
         }
 
-        //out = player_channel->sample_tracker < mod->samples[channel->sample-1]->length*2 ? (127+(uint8_t)mod->samples[channel->sample-1]->data[((int)player_channel->sample_tracker)%mod->samples[channel->sample-1]->length*2]) : 127;
-        if(player_channel->sample_tracker < mod->samples[channel->sample-1]->length*2){
-            int di = ((int)player_channel->sample_tracker)%mod->samples[channel->sample-1]->length*2;
-            int di_next = ((int)player_channel->sample_tracker+1)%mod->samples[channel->sample-1]->length*2;
-            int8_t current_byte = mod->samples[channel->sample-1]->data[di];
-            int8_t next_byte = mod->samples[channel->sample-1]->data[(di_next)];
+        if(player_channel->sample_tracker < sample->length*2){
+            int di = ((int)player_channel->sample_tracker)%(sample->length*2);
+            int di_next = ((int)player_channel->sample_tracker+1)%(sample->length*2);
+            int current_byte = sample->data[di];
+            int next_byte = sample->data[(di_next)];
             double progress = player_channel->tick/thr;
-            out = LARP(current_byte, next_byte, progress);
+            progress = 0;
+            out = LARP(current_byte, next_byte, progress) * sample->volume*0.5;
         }else{
-            127;
+            out = 0;
         }
     }else{
-        out = 127;
+        out = 0;
     }
     player_channel->tick++;
     return out;

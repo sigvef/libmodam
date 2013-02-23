@@ -23,6 +23,7 @@ int main(){
 
     free(buffer);
 
+
     MOD_Player* player = MOD_Player_create();
 
     MOD_Player_play(player, mod);

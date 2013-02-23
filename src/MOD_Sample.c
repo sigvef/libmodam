@@ -21,8 +21,8 @@ MOD_Sample* MOD_Sample_load(int8_t **data){
 }
 
 void MOD_Sample_loadData(MOD_Sample* sample, int8_t **data){
-    sample->data = (int8_t*) malloc(sizeof(int8_t)*sample->length);
-    for(int i=0;i<sample->length;i++){
+    sample->data = (int8_t*) malloc(sizeof(int8_t)*sample->length*2);
+    for(int i=0;i<sample->length*2;i++){
         sample->data[i] = *(*data)++;
     }
 }

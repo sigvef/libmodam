@@ -3,6 +3,7 @@
 #include "MOD.h"
 #include "MOD_Sample.h"
 #include "MOD_Pattern.h"
+#include "utils.h"
 
 
 MOD* MOD_load(int8_t* _data){
@@ -30,8 +31,11 @@ MOD* MOD_load(int8_t* _data){
 
     mod->historical_127 = *data++;
 
+    int n_patterns = 0;
+
     for(int i=0;i<128;i++){
         mod->pattern_table[i] = *data++;
+        n_patterns = MAX(mod->pattern_table[i]+1, n_patterns);
     }
 
     for(int i=0;i<4;i++){
@@ -39,7 +43,7 @@ MOD* MOD_load(int8_t* _data){
     }
 
     mod->patterns = (MOD_Pattern**) malloc(sizeof(MOD_Pattern)*128);
-    for(int i=0;i<128;i++){
+    for(int i=0;i<n_patterns;i++){
         mod->patterns[i] = MOD_Pattern_load(&data);
     }
 

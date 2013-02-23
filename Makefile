@@ -10,11 +10,10 @@ all:
 	ar rcs lib/libmodam.a obj/*.o
 
 test: all
-	gcc -std=c99 tests/test.c -o bin/test -Iinclude -Llib -lmodam -g
-	bin/test
-
-play: all
 	gcc -std=c99 tests/test.c -o bin/test -Iinclude -Llib -lmodam -g -lm
+
+
+play: all test
 	bin/test | aplay -r44100 -f S16_LE
 
 clean:
