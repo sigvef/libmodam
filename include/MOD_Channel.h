@@ -5,7 +5,7 @@
 
 typedef struct {
     int8_t sample;
-    int16_t sample_period;
+    double sample_period;
     int16_t effect;
 } MOD_Channel;
 

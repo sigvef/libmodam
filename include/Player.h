@@ -3,12 +3,22 @@
 
 #include "MOD.h"
 
+#define WAVEFORM_SINE 0
+#define WAVEFORM_RAMPDOWN 1
+#define WAVEFORM_SQUARE 2
+#define WAVEFORM_RANDOM 3
+#define WAVEFORM_NO_RETRIGGER 4
+
 typedef struct {
     double sample_tracker;
     double tick;
     double sample_rate;
     int old_sample;
-    int old_period;
+    double old_period;
+    int vibrato_waveform;
+    double vibrato_amplitude;
+    double vibrato_period;
+    long vibrato_tick;
 } MOD_Player_Channel;
 
 typedef struct{

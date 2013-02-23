@@ -5,6 +5,8 @@
 #include "Player.h"
 #include "utils.h"
 
+#define PI 3.142592
+
 MOD_Player_Channel* MOD_Player_Channel_create(){
     MOD_Player_Channel* channel = (MOD_Player_Channel*) malloc(sizeof(MOD_Player_Channel));
     channel->sample_tracker = 0;
@@ -12,6 +14,11 @@ MOD_Player_Channel* MOD_Player_Channel_create(){
     channel->sample_rate = 44100;
     channel->old_sample = 0;
     channel->old_period = 0;
+    channel->vibrato_waveform = WAVEFORM_SINE;
+    channel->vibrato_amplitude = 0;
+    channel->vibrato_period = 0;
+    channel->vibrato_tick = 0;
+    channel->volume_speed = 0;
     return channel;
 }
 
@@ -22,7 +29,7 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
         channel->sample_period = player_channel->old_period;
     }
 
-    int sample_period = channel->sample_period;
+    double sample_period = channel->sample_period;
 
     int e = (channel->effect&0xf00) >> 8;
     int x = (channel->effect&0x0f0) >> 4;
@@ -43,10 +50,15 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
         case EFFECT_SLIDE_TO_NOTE:
             break;
         case EFFECT_VIBRATO:
+            player_channel->vibrato_waveform = WAVEFORM_SINE;
+            player_channel->vibrato_amplitude = y/16.;
+            player_channel->vibrato_period = (x*player->ticks_per_division)/64.;
+            player_channel->vibrato_tick++;
             break;
         case EFFECT_CONTINUE_SLIDE_TO_NOTE_AND_VOLUME_SLIDE:
             break;
         case EFFECT_CONTINUE_VIBRATO_TO_NOTE_AND_VOLUME_SLIDE:
+            player_channel->vibrato_tick++;
             break;
         case EFFECT_TREMOLO:
             break;
@@ -81,6 +93,18 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
         default:
             break;
     }
+
+    double modifier = pow(2, 2*player_channel->vibrato_amplitude*sin(
+        player_channel->vibrato_period*player_channel->vibrato_tick*player->sample_rate/150000000.*PI
+    )/12.);
+
+    //fprintf(stderr, "vt: %d, ampl: %f, modifier: %f\n",player_channel->vibrato_tick, player_channel->vibrato_amplitude, modifier);
+
+    if(isnan(modifier)){
+        modifier = 1;
+    }
+
+    sample_period /= modifier;
 
     double out;
     if(channel->sample != 0){
