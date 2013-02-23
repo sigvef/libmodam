@@ -105,7 +105,6 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
         player_channel->vibrato_period*player_channel->vibrato_tick*player->sample_rate/150000000.*PI
     )/12.);
 
-    //fprintf(stderr, "vt: %d, ampl: %f, modifier: %f\n",player_channel->vibrato_tick, player_channel->vibrato_amplitude, modifier);
 
     if(isnan(modifier)){
         modifier = 1;
@@ -142,12 +141,8 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
 
         if(player_channel->sample_tracker < sample->length*2){
             int di = ((int)player_channel->sample_tracker)%(sample->length*2);
-            int di_next = ((int)player_channel->sample_tracker+1)%(sample->length*2);
             int current_byte = sample->data[di];
-            int next_byte = sample->data[(di_next)];
-            double progress = player_channel->tick/thr;
-            progress = 0;
-            out = LARP(current_byte, next_byte, progress) * sample->volume*0.5 * player_channel->volume/64.;
+            out = current_byte * sample->volume*0.5 * player_channel->volume/64.;
         }else{
             out = 0;
         }
