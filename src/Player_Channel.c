@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "MOD.h"
 #include "MOD_Channel.h"
-#include "Player_Channel.h"
+#include "Player.h"
 
 MOD_Player_Channel* MOD_Player_Channel_create(){
     MOD_Player_Channel* channel = (MOD_Player_Channel*) malloc(sizeof(MOD_Player_Channel));
@@ -13,7 +13,7 @@ MOD_Player_Channel* MOD_Player_Channel_create(){
     return channel;
 }
 
-uint8_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD* mod, MOD_Channel* channel){
+uint8_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod, MOD_Channel* channel){
 
         int e = (channel->effect&0xf00) >> 8;
         int x = (channel->effect&0x0f0) >> 4;

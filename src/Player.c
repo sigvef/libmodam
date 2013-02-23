@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include "Player.h"
-#include "Player_Channel.h"
 #include "MOD.h"
 
 MOD_Player* MOD_Player_create(){
@@ -28,10 +27,10 @@ void MOD_Player_play(MOD_Player* player, MOD*mod){
         pattern_division = mod->patterns[mod->pattern_table[player->song_position]]->divisions[player->active_division];
 
         uint8_t out = 0;
-        out += MOD_Player_Channel_step(c0, mod, pattern_division->channels[0])*0.23;
-        out += MOD_Player_Channel_step(c1, mod, pattern_division->channels[1])*0.23;
-        out += MOD_Player_Channel_step(c2, mod, pattern_division->channels[2])*0.23;
-        out += MOD_Player_Channel_step(c3, mod, pattern_division->channels[3])*0.3;
+        out += MOD_Player_Channel_step(c0, player, mod, pattern_division->channels[0])*0.23;
+        out += MOD_Player_Channel_step(c1, player, mod, pattern_division->channels[1])*0.23;
+        out += MOD_Player_Channel_step(c2, player, mod, pattern_division->channels[2])*0.23;
+        out += MOD_Player_Channel_step(c3, player, mod, pattern_division->channels[3])*0.3;
         putchar(out);
 
         player->tick++;
