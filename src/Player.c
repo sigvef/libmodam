@@ -23,7 +23,7 @@ void MOD_Player_play(MOD_Player* player, MOD*mod){
 
     player->tick = 0;
     double tickticker = 0;
-    double tickticker_threshold = AMIGA_FREQUENCY/(double)player->sample_rate;
+    double tickticker_threshold = 10*AMIGA_FREQUENCY/(double)player->sample_rate;
 
 
     while(1){
