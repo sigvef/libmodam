@@ -19,6 +19,7 @@ MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
     channel->volume = 64;
     channel->sample = NULL;
     channel->number = channel_number;
+    channel->sample_period_modifier = 1;
     return channel;
 }
 
@@ -37,6 +38,8 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
     }
 
     sample_period /= modifier;
+
+    sample_period *= player_channel->sample_period_modifier;
 
 
 
@@ -86,14 +89,14 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
     int x = (effect&0x0f0) >> 4;
     int y =  effect&0x00f;
 
+    player_channel->sample_period_modifier = 1.0;
+
     switch(e){
 
         case EFFECT_ARPEGGIO:
-            /*
             ;int step = (int)(3*player->tick/player->ticks_per_division);
-            if(step == 1){ sample_period /= pow(2, x/12.);}
-            if(step == 2){ sample_period /= pow(2, y/12.);}
-            */
+            if(step == 1){ player_channel->sample_period_modifier /= pow(2, x/12.);}
+            if(step == 2){ player_channel->sample_period_modifier /= pow(2, y/12.);}
             break;
 
         case EFFECT_SLIDE_UP:

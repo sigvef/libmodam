@@ -21,6 +21,7 @@ typedef struct {
     double volume;
     MOD_Sample* sample;
     double sample_period;
+    double sample_period_modifier;
     int number;
 } MOD_Player_Channel;
 

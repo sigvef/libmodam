@@ -34,10 +34,10 @@ void MOD_Player_play(MOD_Player* player, MOD*mod){
 
         double out = 0;
 
-        //out += MOD_Player_Channel_step(player->channels[0], player, mod)*0.01;
+        out += MOD_Player_Channel_step(player->channels[0], player, mod)*0.01;
         out += MOD_Player_Channel_step(player->channels[1], player, mod)*0.01;
-        //out += MOD_Player_Channel_step(player->channels[2], player, mod)*0.01;
-        //out += MOD_Player_Channel_step(player->channels[3], player, mod)*0.01;
+        out += MOD_Player_Channel_step(player->channels[2], player, mod)*0.01;
+        out += MOD_Player_Channel_step(player->channels[3], player, mod)*0.01;
 
         putchar((((int16_t)out)&0xff00)>>8);
         putchar( ((int16_t)out)&0x00ff);
