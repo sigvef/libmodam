@@ -7,6 +7,6 @@ typedef struct{
     MOD_PatternDivision* divisions[64];
 } MOD_Pattern;
 
-MOD_Pattern* MOD_Pattern_load(int8_t **data);
+MOD_Pattern* MOD_Pattern_load(const int8_t **data);
 
 #endif

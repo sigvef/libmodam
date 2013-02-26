@@ -6,9 +6,9 @@
 #include "utils.h"
 
 
-MOD* MOD_load(int8_t* _data){
+MOD* MOD_load(const int8_t* _data){
 
-    int8_t* data = _data;
+    const int8_t* data = _data;
 
     MOD* mod = (MOD*) malloc(sizeof(MOD));
 

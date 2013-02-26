@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+
+from sys import argv
+import os.path
+import subprocess
+import re
+
+def help():
+    print 'This util prepares files for embedding in executables. It takes an arbitrary number'
+    print 'of files and bundles them together as a huge header file containging int8_t arrays.'
+    print 'Filenames that start with a number are currently not supported.'
+    print ''
+    print 'Usage: embedify infile [additional infiles] outfile'
+    print 'Example: embedify apple.png banana.png pear.png fruitimg.h'
+
+
+def main():
+
+    if len(argv) < 3:
+            return help()
+
+    infiles = argv[1:-1] 
+    outname = argv[-1]
+
+    hfilename = os.path.basename(outname)
+    baseoutname = hfilename.split('.')[0]
+    
+    with open(outname, 'w+') as hfile:
+
+        guardname = re.sub('[^a-zA-Z0-9]', '_', hfilename).upper()
+        hfile.write('#ifndef ' + guardname + '\n')
+        hfile.write('#define ' + guardname + '\n')
+
+        for filename in infiles:
+            with open(filename, 'r') as f:
+
+                basename = re.sub('[^a-zA-Z0-9]', '_', (baseoutname.upper() + '_' + os.path.basename(filename).upper()))
+
+                bytes = map(str,map(ord,[byte for byte in f.read()]))
+
+                hfile.write('static const int8_t ' + basename + '[' + str(len(bytes))+ 'L] = {' + ','.join(bytes) + '};\n')
+                hfile.write('static const long ' + basename + '_LENGTH = ' + str(len(bytes)) + 'L;\n')
+
+
+        hfile.write('#endif')
+
+if __name__ == '__main__':
+    main()

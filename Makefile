@@ -1,4 +1,5 @@
 all:
+	utils/embedify res/class05.mod include/modfiles.h
 	gcc -std=c99 -c src/Player_Channel.c -Iinclude -o obj/Player_Channel.o -g
 	gcc -std=c99 -c src/Player.c -Iinclude -o obj/Player.o -g
 	gcc -std=c99 -c src/MOD.c -Iinclude -o obj/MOD.o -g

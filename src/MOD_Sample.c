@@ -3,7 +3,7 @@
 #include "MOD_Sample.h"
 #include "utils.h"
 
-MOD_Sample* MOD_Sample_load(int8_t **data){
+MOD_Sample* MOD_Sample_load(const int8_t **data){
 
     MOD_Sample* sample = (MOD_Sample*) malloc(sizeof(MOD_Sample));
 
@@ -20,7 +20,7 @@ MOD_Sample* MOD_Sample_load(int8_t **data){
     return sample;
 }
 
-void MOD_Sample_loadData(MOD_Sample* sample, int8_t **data){
+void MOD_Sample_loadData(MOD_Sample* sample, const int8_t **data){
     sample->data = (int8_t*) malloc(sizeof(int8_t)*sample->length*2);
     for(int i=0;i<sample->length*2;i++){
         sample->data[i] = *(*data)++;

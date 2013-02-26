@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "MOD_Channel.h"
 
-MOD_Channel* MOD_Channel_load(int8_t **data){
+MOD_Channel* MOD_Channel_load(const int8_t **data){
     MOD_Channel* channel = (MOD_Channel*) malloc(sizeof(MOD_Channel));
 
     uint8_t a = *(*data)++;
