@@ -13,14 +13,15 @@ typedef struct {
     double sample_tracker;
     double tick;
     double sample_rate;
-    int old_sample;
-    double old_period;
     int vibrato_waveform;
     double vibrato_amplitude;
     double vibrato_period;
     long vibrato_tick;
     int volume_speed;
-    int volume;
+    double volume;
+    MOD_Sample* sample;
+    double sample_period;
+    int number;
 } MOD_Player_Channel;
 
 typedef struct{
@@ -34,9 +35,16 @@ typedef struct{
 
 MOD_Player* MOD_Player_create();
 void MOD_Player_play(MOD_Player* player, MOD* mod);
+void MOD_Player_tick(MOD_Player* player, MOD* mod);
+void MOD_Player_division(MOD_Player* player, MOD* mod);
 
 MOD_Player_Channel* MOD_Player_Channel_create();
 void MOD_Player_Channel_free(MOD_Player_Channel* channel);
-double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod, MOD_Channel* channel);
+double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod);
+
+void MOD_Player_Channel_set_volume(MOD_Player_Channel* player_channel, double volume);
+void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_Player* player, int effect);
+void MOD_Player_Channel_division(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod);
+void MOD_Player_Channel_tick(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod);
 
 #endif
