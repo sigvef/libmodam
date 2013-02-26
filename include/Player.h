@@ -31,6 +31,7 @@ typedef struct{
     MOD_Player_Channel* channels[4];
     double tick;
     int song_position;
+    int next_song_position;
     int active_division;
     int ticks_per_division;
     double sample_rate;

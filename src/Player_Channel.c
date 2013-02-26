@@ -150,6 +150,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
             MOD_Player_Channel_set_volume(player_channel, player_channel->volume + x == 0 ? -y : x);
             break;
         case EFFECT_POSITION_JUMP:
+            player->next_song_position = x*16+y;
             break;
         case EFFECT_SET_VOLUME:
             MOD_Player_Channel_set_volume(player_channel, (x<<4) | y);
