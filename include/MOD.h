@@ -25,6 +25,7 @@
 #define AMIGA_FREQUENCY 3546895
 
 /* http://www.mediatel.lu/workshop/audio/fileformat/h_mod.html */
+/* http://archive.cs.uu.nl/pub/MIDI/DOC/MOD-info */
 
 typedef struct {
     char title[20];

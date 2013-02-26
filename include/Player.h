@@ -23,6 +23,8 @@ typedef struct {
     double sample_period;
     double sample_period_modifier;
     int number;
+    double slide_period;
+    double slide_target;
 } MOD_Player_Channel;
 
 typedef struct{

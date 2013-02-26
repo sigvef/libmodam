@@ -24,9 +24,10 @@ void MOD_Player_play(MOD_Player* player, MOD*mod){
     double tickticker_threshold = 10*AMIGA_FREQUENCY/(double)player->sample_rate;
     double tickticker = tickticker_threshold-1;
 
-    player->song_position = mod->n_song_positions-1;
+    player->song_position = 0;//mod->n_song_positions-1;
     player->tick = player->ticks_per_division-1;
     player->active_division = 63;
+    MOD_Player_tick(player, mod);
 
     while(1){
 
@@ -34,9 +35,9 @@ void MOD_Player_play(MOD_Player* player, MOD*mod){
 
         double out = 0;
 
-        out += MOD_Player_Channel_step(player->channels[0], player, mod)*0.01;
-        out += MOD_Player_Channel_step(player->channels[1], player, mod)*0.01;
-        out += MOD_Player_Channel_step(player->channels[2], player, mod)*0.01;
+        //out += MOD_Player_Channel_step(player->channels[0], player, mod)*0.01;
+        //out += MOD_Player_Channel_step(player->channels[1], player, mod)*0.01;
+        //out += MOD_Player_Channel_step(player->channels[2], player, mod)*0.01;
         out += MOD_Player_Channel_step(player->channels[3], player, mod)*0.01;
 
         putchar((((int16_t)out)&0xff00)>>8);

@@ -20,6 +20,8 @@ MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
     channel->sample = NULL;
     channel->number = channel_number;
     channel->sample_period_modifier = 1;
+    channel->slide_target = 0;
+    channel->slide_period = 0;
     return channel;
 }
 
@@ -28,16 +30,6 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
     MOD_Channel* channel = mod->patterns[mod->pattern_table[player->song_position]]->divisions[player->active_division]->channels[player_channel->number];
     double sample_period = player_channel->sample_period;
 
-    double modifier = pow(2, 2*player_channel->vibrato_amplitude*sin(
-        player_channel->vibrato_period*player_channel->vibrato_tick*player->sample_rate/150000000.*PI
-    )/12.);
-
-
-    if(isnan(modifier)){
-        modifier = 1;
-    }
-
-    sample_period /= modifier;
 
     sample_period *= player_channel->sample_period_modifier;
 
@@ -104,21 +96,49 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
         case EFFECT_SLIDE_DOWN:
             break;
         case EFFECT_SLIDE_TO_NOTE:
+            if(x != 0 || y != 0){
+                if(player_channel->slide_period < player_channel->slide_target){
+                    player_channel->slide_period += x*16+y;
+                    if(player_channel->slide_period > player_channel->slide_target){
+                        player_channel->slide_period = player_channel->slide_target;
+                    }
+                } else if(player_channel->slide_period > player_channel->slide_target){
+                    player_channel->slide_period -= x*16+y;
+                    if(player_channel->slide_period < player_channel->slide_target){
+                        player_channel->slide_period = player_channel->slide_target;
+                    }
+                }
+            }
+            player_channel->sample_period_modifier = player_channel->slide_period/player_channel->sample_period;
             break;
         case EFFECT_VIBRATO:
-            /*
             player_channel->vibrato_waveform = WAVEFORM_SINE;
-            player_channel->vibrato_amplitude = y/16.;
-            player_channel->vibrato_period = (x*player->ticks_per_division)/64.;
-            player_channel->vibrato_tick++;
-            */
+            if(y) player_channel->vibrato_amplitude = y/16.;
+            if(x) player_channel->vibrato_period = x/64.;
+            player_channel->sample_period_modifier /= pow(2, player_channel->vibrato_amplitude*sin(
+                player_channel->vibrato_period*player_channel->vibrato_tick*PI*2)/12.);
             break;
         case EFFECT_CONTINUE_SLIDE_TO_NOTE_AND_VOLUME_SLIDE:
+            if(x != 0 || y != 0){
+                if(player_channel->slide_period < player_channel->slide_target){
+                    player_channel->slide_period += x*16+y;
+                    if(player_channel->slide_period > player_channel->slide_target){
+                        player_channel->slide_period = player_channel->slide_target;
+                    }
+                } else if(player_channel->slide_period > player_channel->slide_target){
+                    player_channel->slide_period -= x*16+y;
+                    if(player_channel->slide_period < player_channel->slide_target){
+                        player_channel->slide_period = player_channel->slide_target;
+                    }
+                }
+            }
+            player_channel->sample_period_modifier = player_channel->slide_period/player_channel->sample_period;
             MOD_Player_Channel_set_volume(player_channel, player_channel->volume + x == 0 ? -y : x);
             break;
         case EFFECT_CONTINUE_VIBRATO_TO_NOTE_AND_VOLUME_SLIDE:
             MOD_Player_Channel_set_volume(player_channel, player_channel->volume + (x == 0 ? -y : x));
-            player_channel->vibrato_tick++;
+            player_channel->sample_period_modifier /= pow(2, 2*player_channel->vibrato_amplitude*sin(
+                player_channel->vibrato_period*player_channel->vibrato_tick*PI)/12.);
             break;
         case EFFECT_TREMOLO:
             break;
@@ -162,14 +182,21 @@ void MOD_Player_Channel_tick(MOD_Player_Channel* player_channel, MOD_Player* pla
     MOD_Channel* channel = mod->patterns[mod->pattern_table[player->song_position]]->divisions[player->active_division]->channels[player_channel->number];
 
     MOD_Player_Channel_process_effect(player_channel, player, channel->effect);
+    player_channel->vibrato_tick++;
 }
 
 void MOD_Player_Channel_division(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod){
     MOD_Channel* channel = mod->patterns[mod->pattern_table[player->song_position]]->divisions[player->active_division]->channels[player_channel->number];
 
     if(channel->sample != 0){
-        player_channel->sample = mod->samples[channel->sample-1];
+
+        int effect = (channel->effect&0xf00) >> 8;
+        if(effect == EFFECT_SLIDE_TO_NOTE || effect == EFFECT_CONTINUE_SLIDE_TO_NOTE_AND_VOLUME_SLIDE){
+            player_channel->slide_period = player_channel->sample_period;
+            player_channel->slide_target = channel->sample_period;
+        }
         player_channel->sample_period = channel->sample_period;
+        player_channel->sample = mod->samples[channel->sample-1];
         player_channel->sample_tracker = 0;
         MOD_Player_Channel_set_volume(player_channel, 64);
     }
