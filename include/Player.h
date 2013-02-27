@@ -25,6 +25,7 @@ typedef struct {
     int number;
     double slide_period;
     double slide_target;
+    double slide_speed;
 } MOD_Player_Channel;
 
 typedef struct{

@@ -7,10 +7,7 @@
 
 int main(){
 
-
-
-    MOD* mod = MOD_load(MODFILES_MOD____BE_STEEL_MY_HEART);
-    
+    MOD* mod = MOD_load(MODFILES_MOD_2000AD_CRACKTRO04);
 
     MOD_Player* player = MOD_Player_create();
 

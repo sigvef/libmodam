@@ -92,27 +92,28 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
             break;
 
         case EFFECT_SLIDE_UP:
-            player_channel->slide_period -= x*16+y;
+            if(x*16+y) player_channel->slide_speed = x*16+y;
+            player_channel->slide_period -= player_channel->slide_speed;
             player_channel->slide_period = MAX(player_channel->slide_period, 113);
             player_channel->sample_period_modifier = player_channel->slide_period/player_channel->sample_period;
             break;
         case EFFECT_SLIDE_DOWN:
-            player_channel->slide_period += x*16+y;
+            if(x*16+y) player_channel->slide_speed = x*16+y;
+            player_channel->slide_period += player_channel->slide_speed;
             player_channel->slide_period = MIN(player_channel->slide_period, 856);
             player_channel->sample_period_modifier = player_channel->slide_period/player_channel->sample_period;
             break;
         case EFFECT_SLIDE_TO_NOTE:
-            if(x != 0 || y != 0){
+            if(x*16+y) player_channel->slide_speed = x*16+y;
+            if(player_channel->slide_period < player_channel->slide_target){
+                player_channel->slide_period += player_channel->slide_speed;
+                if(player_channel->slide_period > player_channel->slide_target){
+                    player_channel->slide_period = player_channel->slide_target;
+                }
+            } else if(player_channel->slide_period > player_channel->slide_target){
+                player_channel->slide_period -= player_channel->slide_speed;
                 if(player_channel->slide_period < player_channel->slide_target){
-                    player_channel->slide_period += x*16+y;
-                    if(player_channel->slide_period > player_channel->slide_target){
-                        player_channel->slide_period = player_channel->slide_target;
-                    }
-                } else if(player_channel->slide_period > player_channel->slide_target){
-                    player_channel->slide_period -= x*16+y;
-                    if(player_channel->slide_period < player_channel->slide_target){
-                        player_channel->slide_period = player_channel->slide_target;
-                    }
+                    player_channel->slide_period = player_channel->slide_target;
                 }
             }
             player_channel->sample_period_modifier = player_channel->slide_period/player_channel->sample_period;
