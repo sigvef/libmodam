@@ -37,10 +37,13 @@ typedef struct{
     int next_division;
     int ticks_per_division;
     double sample_rate;
+    double tickticker_threshold;
+    double tickticker;
+    MOD* mod;
 } MOD_Player;
 
 MOD_Player* MOD_Player_create();
-void MOD_Player_play(MOD_Player* player, MOD* mod);
+int16_t MOD_Player_play(MOD_Player* player, MOD* mod);
 void MOD_Player_tick(MOD_Player* player, MOD* mod);
 void MOD_Player_division(MOD_Player* player, MOD* mod);
 

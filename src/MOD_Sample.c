@@ -7,9 +7,8 @@ MOD_Sample* MOD_Sample_load(const int8_t **data){
 
     MOD_Sample* sample = (MOD_Sample*) malloc(sizeof(MOD_Sample));
 
-    for(int i=0;i<22;i++){
-        sample->name[i] = *(*data)++;
-    }
+    sample->name = *data;
+    (*data) += 22;
 
     sample->length = MOD_utils_read16(data);
     sample->finetune = *(*data)++;
@@ -21,8 +20,6 @@ MOD_Sample* MOD_Sample_load(const int8_t **data){
 }
 
 void MOD_Sample_loadData(MOD_Sample* sample, const int8_t **data){
-    sample->data = (int8_t*) malloc(sizeof(int8_t)*sample->length*2);
-    for(int i=0;i<sample->length*2;i++){
-        sample->data[i] = *(*data)++;
-    }
+    sample->name = data;
+    *data += sample->length*2;
 }

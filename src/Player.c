@@ -14,23 +14,24 @@ MOD_Player* MOD_Player_create(){
     player->channels[1] = MOD_Player_Channel_create(1);
     player->channels[2] = MOD_Player_Channel_create(2);
     player->channels[3] = MOD_Player_Channel_create(3);
+    player->tickticker_threshold = 10*AMIGA_FREQUENCY/(double)player->sample_rate;
+    player->tickticker = 0;
+    player->mod = 0;
     return player;
 }
 
-void MOD_Player_play(MOD_Player* player, MOD*mod){
-
-    MOD_PatternDivision* pattern_division; 
-
-
-    double tickticker_threshold = 10*AMIGA_FREQUENCY/(double)player->sample_rate;
-    double tickticker = tickticker_threshold-1;
-
+void MOD_Player_set_mod(MOD_Player* player, MOD* mod){
     player->song_position = mod->n_song_positions-1;
     player->tick = player->ticks_per_division;
     player->active_division = 63;
     MOD_Player_tick(player, mod);
+}
 
-    while(1){
+
+int16_t MOD_Player_play(MOD_Player* player, MOD*mod){
+
+    MOD_PatternDivision* pattern_division; 
+
 
         pattern_division = mod->patterns[mod->pattern_table[player->song_position]]->divisions[player->active_division];
 
@@ -41,18 +42,15 @@ void MOD_Player_play(MOD_Player* player, MOD*mod){
         out += MOD_Player_Channel_step(player->channels[2], player, mod)*0.005;
         out += MOD_Player_Channel_step(player->channels[3], player, mod)*0.005;
 
-        putchar((((int16_t)out)&0xff00)>>8);
-        putchar( ((int16_t)out)&0x00ff);
-
-        tickticker++;
-        while(tickticker > tickticker_threshold){
-            tickticker -= tickticker_threshold;
+        player->tickticker++;
+        while(player->tickticker > player->tickticker_threshold){
+            player->tickticker -= player->tickticker_threshold;
             MOD_Player_tick(player, mod);
         }
 
-
-    }
+        return out;
 }
+
 
 void MOD_Player_tick(MOD_Player* player, MOD* mod){
 

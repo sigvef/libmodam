@@ -7,11 +7,15 @@
 
 int main(){
 
-    MOD* mod = MOD_load(MODFILES_MOD_SLEEPLESS_NIGHTS_);
+    MOD* mod = MOD_load(MODFILES_CLASS05_MOD);
 
     MOD_Player* player = MOD_Player_create();
 
-    MOD_Player_play(player, mod);
+    while(1){
+        int16_t out = MOD_Player_play(player, mod);
+        putchar((out&0xff00) >> 8);
+        putchar(out&0xff);
+    }
 
     return 0;
 }
