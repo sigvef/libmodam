@@ -163,7 +163,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
             break;
         case EFFECT_PATTERN_BREAK:
             ;int division = x*10+y; /* yes, really 10 */
-            player->next_song_position = (player->song_position + 1) % mod->n_song_positions;
+            if(player->next_song_position == -1) player->next_song_position = (player->song_position + 1) % mod->n_song_positions;
             player->next_division = division;
             break;
         case EFFECT_EXTRAS:
@@ -177,7 +177,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
             }
 
             if(speed > 32){
-                speed = (24 * speed)/6;
+                speed = speed*4./128.;
             }
 
             player->ticks_per_division = speed;  
@@ -193,10 +193,14 @@ void MOD_Player_Channel_tick(MOD_Player_Channel* player_channel, MOD_Player* pla
 
     MOD_Player_Channel_process_effect(player_channel, player, mod, channel->effect);
     player_channel->vibrato_tick++;
+
+    //fprintf(stderr, "[%i] tick: %i\n", player->active_division, player->tick);
+
 }
 
 void MOD_Player_Channel_division(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod){
     MOD_Channel* channel = mod->patterns[mod->pattern_table[player->song_position]]->divisions[player->active_division]->channels[player_channel->number];
+
 
 
     if(channel->sample != 0){

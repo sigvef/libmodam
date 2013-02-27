@@ -7,7 +7,7 @@
 
 int main(){
 
-    MOD* mod = MOD_load(MODFILES_MOD_2000AD_CRACKTRO04);
+    MOD* mod = MOD_load(MODFILES_MOD_LEGEND_OF_ZELDA);
 
     MOD_Player* player = MOD_Player_create();
 

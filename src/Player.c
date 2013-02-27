@@ -10,10 +10,10 @@ MOD_Player* MOD_Player_create(){
     player->active_division = 0;
     player->ticks_per_division = 6;
     player->sample_rate = 44100;
-    player->channels[0] = MOD_Player_Channel_create(1);
+    player->channels[0] = MOD_Player_Channel_create(0);
     player->channels[1] = MOD_Player_Channel_create(1);
-    player->channels[2] = MOD_Player_Channel_create(1);
-    player->channels[3] = MOD_Player_Channel_create(1);
+    player->channels[2] = MOD_Player_Channel_create(2);
+    player->channels[3] = MOD_Player_Channel_create(3);
     return player;
 }
 

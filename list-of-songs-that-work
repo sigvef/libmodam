@@ -1,6 +1,96 @@
 # To test libmodam, the following mods by maktone have been tested and are working
+# the mods were pulled from http://amp.dascene.net/detail.php?detail=modules&view=4532
 
-   be my steel heart
 1992
+2000AD Cracktro01
+2000AD Cracktro02
 2000AD Cracktro03 (slight slide bug, might be vibrato-related)
+2000AD Cracktro04
+a weak mind (minor melody glitch)
+ACAB - class08
+annie's song
+apati
+bacongrytor
+balance
+baloo
+be my steel heart
+bic
+big blunts
+boozeline 2006
+burning neon
+castlevania 1
+check
+chillin' with kings!
+chipmusic.nu
+choke
+cindirella99
+class_cracktro_15
+class for ever!
+class installer 02
+class04
+class05
+class07
+class09
+class10
+class11.time.flies
+class12.the.struggle
+classcracktrotune VI
+cracktune01
+crasher
+cucumber hunt
+cyril (minor melody glitch)
+deranged
+df2 intro 01
+Die Trachtenpuppe
+dogfight
+domination
+eargasm
+explore your mind
+explosive
+fairlight setup
+false alarm
+final
+flt introtune 01
+fluke01
+fobovisa
+freedom
+fuck off josefin
+Goonies2
+greensleves
+happy b-day josefin
+happy thoughts
+harjedalssang
+heelhook
+herdens vrede
+holland art
+ice
+jingle bells
+jingle bells2
+jtf
+klefz ascii page!
+klefz the cracker
+lederhosen
+legend of zelda
 
+
+
+# list of really cool songs
+
+bacongrytor
+baloo
+big blunts
+class for ever!
+class05
+Goonies2
+greensleves
+happy mushrooms
+heelhook
+jingle bells2
+legend of zelda
+
+
+# list of songs that don't work
+
+bell (Dies in the start. This song seems somewthat of an crazy epic though, so it should maybe be fixed)
+class03 (Lead is missing)
+dig your own grave! (slide in the intro is messed up and loud)
