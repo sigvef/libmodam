@@ -92,8 +92,14 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
             break;
 
         case EFFECT_SLIDE_UP:
+            player_channel->slide_period -= x*16+y;
+            player_channel->slide_period = MAX(player_channel->slide_period, 113);
+            player_channel->sample_period_modifier = player_channel->slide_period/player_channel->sample_period;
             break;
         case EFFECT_SLIDE_DOWN:
+            player_channel->slide_period += x*16+y;
+            player_channel->slide_period = MIN(player_channel->slide_period, 856);
+            player_channel->sample_period_modifier = player_channel->slide_period/player_channel->sample_period;
             break;
         case EFFECT_SLIDE_TO_NOTE:
             if(x != 0 || y != 0){
@@ -195,6 +201,9 @@ void MOD_Player_Channel_division(MOD_Player_Channel* player_channel, MOD_Player*
     if(channel->sample != 0){
 
         int effect = (channel->effect&0xf00) >> 8;
+        if(effect == EFFECT_SLIDE_UP || effect == EFFECT_SLIDE_DOWN){
+            player_channel->slide_period = player_channel->sample_period;
+        }
         if(effect == EFFECT_SLIDE_TO_NOTE || effect == EFFECT_CONTINUE_SLIDE_TO_NOTE_AND_VOLUME_SLIDE){
             player_channel->slide_period = player_channel->sample_period;
             player_channel->slide_target = channel->sample_period;
