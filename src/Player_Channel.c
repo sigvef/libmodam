@@ -30,10 +30,7 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
     MOD_Channel* channel = mod->patterns[mod->pattern_table[player->song_position]]->divisions[player->active_division]->channels[player_channel->number];
     double sample_period = player_channel->sample_period;
 
-
     sample_period *= player_channel->sample_period_modifier;
-
-
 
     double out;
     if(player_channel->sample != 0){
@@ -57,6 +54,7 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
             int di = ((int)player_channel->sample_tracker)%(sample->length*2);
             int current_byte = sample->data[di];
             out = current_byte * sample->volume*0.5/64. * player_channel->volume;
+            //fprintf(stderr, "[%i] svol: %f, pcvol: %f\n", player->active_division, sample->volume, player_channel->volume);
         }else{
             out = 0;
         }
@@ -154,7 +152,8 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
         case EFFECT_SET_SAMPLE_OFFSET:
             break;
         case EFFECT_VOLUME_SLIDE:
-            MOD_Player_Channel_set_volume(player_channel, player_channel->volume + x == 0 ? -y : x);
+            if(x || y) player_channel->volume_speed = x== 0 ? -y : x;
+            MOD_Player_Channel_set_volume(player_channel, player_channel->volume + player_channel->volume_speed);
             break;
         case EFFECT_POSITION_JUMP:
             player->next_song_position = x*16+y;
@@ -199,6 +198,7 @@ void MOD_Player_Channel_tick(MOD_Player_Channel* player_channel, MOD_Player* pla
 void MOD_Player_Channel_division(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod){
     MOD_Channel* channel = mod->patterns[mod->pattern_table[player->song_position]]->divisions[player->active_division]->channels[player_channel->number];
 
+
     if(channel->sample != 0){
 
         int effect = (channel->effect&0xf00) >> 8;
@@ -209,7 +209,10 @@ void MOD_Player_Channel_division(MOD_Player_Channel* player_channel, MOD_Player*
             player_channel->slide_period = player_channel->sample_period;
             player_channel->slide_target = channel->sample_period;
         }
-        player_channel->sample_period = channel->sample_period;
+
+        if(channel->sample_period){
+            player_channel->sample_period = channel->sample_period;
+        }
         player_channel->sample = mod->samples[channel->sample-1];
         player_channel->sample_tracker = 0;
         MOD_Player_Channel_set_volume(player_channel, 64);
