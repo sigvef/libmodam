@@ -25,7 +25,7 @@ void MOD_Player_play(MOD_Player* player, MOD*mod){
     double tickticker_threshold = 10*AMIGA_FREQUENCY/(double)player->sample_rate;
     double tickticker = tickticker_threshold-1;
 
-    player->song_position = 19; //mod->n_song_positions-1;
+    player->song_position = mod->n_song_positions-1;
     player->tick = player->ticks_per_division;
     player->active_division = 63;
     MOD_Player_tick(player, mod);
