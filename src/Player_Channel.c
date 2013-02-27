@@ -75,7 +75,7 @@ void MOD_Player_Channel_set_volume(MOD_Player_Channel* player_channel, double vo
     player_channel->volume = volume;
 }
 
-void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_Player* player, int effect){
+void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod, int effect){
 
     int e = (effect&0xf00) >> 8;
     int x = (effect&0x0f0) >> 4;
@@ -156,6 +156,9 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
             MOD_Player_Channel_set_volume(player_channel, (x<<4) | y);
             break;
         case EFFECT_PATTERN_BREAK:
+            ;int division = x*10+y; /* yes, really 10 */
+            player->next_song_position = (player->song_position + 1) % mod->n_song_positions;
+            player->next_division = division;
             break;
         case EFFECT_EXTRAS:
             break;
@@ -182,7 +185,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
 void MOD_Player_Channel_tick(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod){
     MOD_Channel* channel = mod->patterns[mod->pattern_table[player->song_position]]->divisions[player->active_division]->channels[player_channel->number];
 
-    MOD_Player_Channel_process_effect(player_channel, player, channel->effect);
+    MOD_Player_Channel_process_effect(player_channel, player, mod, channel->effect);
     player_channel->vibrato_tick++;
 }
 

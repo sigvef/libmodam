@@ -33,6 +33,7 @@ typedef struct{
     int song_position;
     int next_song_position;
     int active_division;
+    int next_division;
     int ticks_per_division;
     double sample_rate;
 } MOD_Player;
@@ -47,7 +48,7 @@ void MOD_Player_Channel_free(MOD_Player_Channel* channel);
 double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod);
 
 void MOD_Player_Channel_set_volume(MOD_Player_Channel* player_channel, double volume);
-void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_Player* player, int effect);
+void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod, int effect);
 void MOD_Player_Channel_division(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod);
 void MOD_Player_Channel_tick(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod);
 

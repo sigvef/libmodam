@@ -7,7 +7,10 @@
 
 int main(){
 
-    MOD* mod = MOD_load(MODFILES_CLASS05_MOD);
+
+
+    MOD* mod = MOD_load(MODFILES_MOD____BE_STEEL_MY_HEART);
+    
 
     MOD_Player* player = MOD_Player_create();
 
