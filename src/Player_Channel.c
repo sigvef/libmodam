@@ -178,6 +178,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
 
             if(speed > 32){
                 speed = speed*4./128.;
+                speed = 4;
             }
 
             player->ticks_per_division = speed;  
