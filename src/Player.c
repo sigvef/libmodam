@@ -37,10 +37,10 @@ int16_t MOD_Player_play(MOD_Player* player, MOD*mod){
 
         double out = 0;
 
-        out += MOD_Player_Channel_step(player->channels[0], player, mod)*0.005;
-        out += MOD_Player_Channel_step(player->channels[1], player, mod)*0.005;
+        //out += MOD_Player_Channel_step(player->channels[0], player, mod)*0.005;
+        //out += MOD_Player_Channel_step(player->channels[1], player, mod)*0.005;
         out += MOD_Player_Channel_step(player->channels[2], player, mod)*0.005;
-        out += MOD_Player_Channel_step(player->channels[3], player, mod)*0.005;
+        //out += MOD_Player_Channel_step(player->channels[3], player, mod)*0.005;
 
         player->tickticker++;
         while(player->tickticker > player->tickticker_threshold){
@@ -61,10 +61,10 @@ void MOD_Player_tick(MOD_Player* player, MOD* mod){
         MOD_Player_division(player, mod);
     }
 
-    MOD_Player_Channel_tick(player->channels[0], player, mod);
-    MOD_Player_Channel_tick(player->channels[1], player, mod);
+    //MOD_Player_Channel_tick(player->channels[0], player, mod);
+    //MOD_Player_Channel_tick(player->channels[1], player, mod);
     MOD_Player_Channel_tick(player->channels[2], player, mod);
-    MOD_Player_Channel_tick(player->channels[3], player, mod);
+    //MOD_Player_Channel_tick(player->channels[3], player, mod);
 }
 
 
@@ -88,8 +88,8 @@ void MOD_Player_division(MOD_Player* player, MOD* mod){
             player->active_division = player->next_division;
             player->next_division = -1;
         }
-        MOD_Player_Channel_division(player->channels[0], player, mod);
-        MOD_Player_Channel_division(player->channels[1], player, mod);
+        //MOD_Player_Channel_division(player->channels[0], player, mod);
+        //MOD_Player_Channel_division(player->channels[1], player, mod);
         MOD_Player_Channel_division(player->channels[2], player, mod);
-        MOD_Player_Channel_division(player->channels[3], player, mod);
+        //MOD_Player_Channel_division(player->channels[3], player, mod);
 }

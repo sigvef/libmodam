@@ -47,6 +47,7 @@ typedef struct{
 MOD_Player* MOD_Player_create();
 int16_t MOD_Player_play(MOD_Player* player, MOD* mod);
 void MOD_Player_tick(MOD_Player* player, MOD* mod);
+void MOD_Player_set_mod(MOD_Player* player, MOD* mod);
 void MOD_Player_division(MOD_Player* player, MOD* mod);
 
 MOD_Player_Channel* MOD_Player_Channel_create();
