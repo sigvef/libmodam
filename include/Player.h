@@ -19,7 +19,7 @@ typedef struct {
     double vibrato_period;
     long vibrato_tick;
     int volume_speed;
-    double volume;
+    int volume;
     MOD_Sample* sample;
     const int8_t* sample_data;
     double sample_period;
@@ -52,9 +52,9 @@ void MOD_Player_division(MOD_Player* player, MOD* mod);
 
 MOD_Player_Channel* MOD_Player_Channel_create();
 void MOD_Player_Channel_free(MOD_Player_Channel* channel);
-double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod);
+int16_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod);
 
-void MOD_Player_Channel_set_volume(MOD_Player_Channel* player_channel, double volume);
+void MOD_Player_Channel_set_volume(MOD_Player_Channel* player_channel, int volume);
 void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod, int effect);
 void MOD_Player_Channel_division(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod);
 void MOD_Player_Channel_tick(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod);

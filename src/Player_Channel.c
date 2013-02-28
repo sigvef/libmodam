@@ -7,6 +7,8 @@
 
 #define PI 3.142592
 
+#define TICKSTEP 80
+
 MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
     MOD_Player_Channel* channel = (MOD_Player_Channel*) malloc(sizeof(MOD_Player_Channel));
     channel->sample_tracker = 0;
@@ -26,19 +28,19 @@ MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
     return channel;
 }
 
-double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod){
+int16_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod){
 
     MOD_Channel* channel = &mod->patterns[mod->pattern_table[player->song_position]].divisions[player->active_division].channels[player_channel->number];
     double sample_period = player_channel->sample_period;
 
     sample_period *= player_channel->sample_period_modifier;
 
-    double out;
+    int16_t out;
     if(player_channel->sample != 0){
         MOD_Sample* sample = player_channel->sample;
         const int8_t* sample_data = player_channel->sample_data;
 
-        double thr = sample_period/(double)AMIGA_FREQUENCY*player_channel->sample_rate;
+        double thr = sample_period/2./TICKSTEP;
 
         while(player_channel->tick > thr){
 
@@ -55,7 +57,7 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
         if(player_channel->sample_tracker < MOD_Sample_get_length(sample)*2){
             int di = ((int)player_channel->sample_tracker)%(MOD_Sample_get_length(sample)*2);
             int current_byte = sample_data[di];
-            out = current_byte * sample->volume*0.5/64. * player_channel->volume;
+            out = current_byte * (((int)sample->volume * (int)player_channel->volume)>>5);
             //fprintf(stderr, "[%i] svol: %f, pcvol: %f\n", player->active_division, sample->volume, player_channel->volume);
         }else{
             out = 0;
@@ -69,7 +71,7 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
 }
 
 
-void MOD_Player_Channel_set_volume(MOD_Player_Channel* player_channel, double volume){
+void MOD_Player_Channel_set_volume(MOD_Player_Channel* player_channel, int volume){
     volume = MAX(volume, 0);
     volume = MIN(volume, 64);
     player_channel->volume = volume;

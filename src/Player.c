@@ -30,25 +30,20 @@ void MOD_Player_set_mod(MOD_Player* player, MOD* mod){
 
 int16_t MOD_Player_play(MOD_Player* player, MOD*mod){
 
-    MOD_PatternDivision* pattern_division; 
+    int16_t out = 0;
 
+    //out += MOD_Player_Channel_step(player->channels[0], player, mod)/4;
+    //out += MOD_Player_Channel_step(player->channels[1], player, mod)/4;
+    //out += MOD_Player_Channel_step(player->channels[2], player, mod)/4;
+    out += MOD_Player_Channel_step(player->channels[3], player, mod)/4;
 
-        pattern_division = &mod->patterns[mod->pattern_table[player->song_position]].divisions[player->active_division];
+    player->tickticker+=2;
+    while(player->tickticker > player->tickticker_threshold){
+        player->tickticker -= player->tickticker_threshold;
+        MOD_Player_tick(player, mod);
+    }
 
-        double out = 0;
-
-        //out += MOD_Player_Channel_step(player->channels[0], player, mod)*0.005;
-        //out += MOD_Player_Channel_step(player->channels[1], player, mod)*0.005;
-        out += MOD_Player_Channel_step(player->channels[2], player, mod)*0.005;
-        //out += MOD_Player_Channel_step(player->channels[3], player, mod)*0.005;
-
-        player->tickticker++;
-        while(player->tickticker > player->tickticker_threshold){
-            player->tickticker -= player->tickticker_threshold;
-            MOD_Player_tick(player, mod);
-        }
-
-        return out;
+    return out;
 }
 
 
@@ -63,8 +58,8 @@ void MOD_Player_tick(MOD_Player* player, MOD* mod){
 
     //MOD_Player_Channel_tick(player->channels[0], player, mod);
     //MOD_Player_Channel_tick(player->channels[1], player, mod);
-    MOD_Player_Channel_tick(player->channels[2], player, mod);
-    //MOD_Player_Channel_tick(player->channels[3], player, mod);
+    //MOD_Player_Channel_tick(player->channels[2], player, mod);
+    MOD_Player_Channel_tick(player->channels[3], player, mod);
 }
 
 
@@ -90,6 +85,6 @@ void MOD_Player_division(MOD_Player* player, MOD* mod){
         }
         //MOD_Player_Channel_division(player->channels[0], player, mod);
         //MOD_Player_Channel_division(player->channels[1], player, mod);
-        MOD_Player_Channel_division(player->channels[2], player, mod);
-        //MOD_Player_Channel_division(player->channels[3], player, mod);
+        //MOD_Player_Channel_division(player->channels[2], player, mod);
+        MOD_Player_Channel_division(player->channels[3], player, mod);
 }
