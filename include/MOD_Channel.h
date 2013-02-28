@@ -4,11 +4,14 @@
 #include <stdint.h>
 
 typedef struct {
-    int8_t sample;
-    double sample_period;
-    int16_t effect;
+    uint8_t a;
+    uint8_t b;
+    uint8_t c;
+    uint8_t d;
 } MOD_Channel;
 
-MOD_Channel* MOD_Channel_load(const int8_t **data);
+int MOD_Channel_get_sample(MOD_Channel* channel);
+double MOD_Channel_get_sample_period(MOD_Channel* channel);
+int MOD_Channel_get_effect(MOD_Channel* channel);
 
 #endif

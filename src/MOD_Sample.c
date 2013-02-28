@@ -3,23 +3,16 @@
 #include "MOD_Sample.h"
 #include "utils.h"
 
-MOD_Sample* MOD_Sample_load(const int8_t **data){
+uint16_t MOD_Sample_get_length(MOD_Sample* sample){
+    return FLIP_ENDIANNESS_INT16(sample->length);
 
-    MOD_Sample* sample = (MOD_Sample*) malloc(sizeof(MOD_Sample));
-
-    sample->name = *data;
-    (*data) += 22;
-
-    sample->length = MOD_utils_read16(data);
-    sample->finetune = *(*data)++;
-    sample->volume = *(*data)++;
-    sample->repeat_offset = MOD_utils_read16(data);
-    sample->repeat_length = MOD_utils_read16(data);
-
-    return sample;
 }
 
-void MOD_Sample_loadData(MOD_Sample* sample, const int8_t **data){
-    sample->name = data;
-    *data += sample->length*2;
+uint16_t MOD_Sample_get_repeat_length(MOD_Sample* sample){
+    return FLIP_ENDIANNESS_INT16(sample->repeat_length);
 }
+
+uint16_t MOD_Sample_get_repeat_offset(MOD_Sample* sample){
+    return FLIP_ENDIANNESS_INT16(sample->length);
+}
+

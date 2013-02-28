@@ -33,7 +33,7 @@ int16_t MOD_Player_play(MOD_Player* player, MOD*mod){
     MOD_PatternDivision* pattern_division; 
 
 
-        pattern_division = mod->patterns[mod->pattern_table[player->song_position]]->divisions[player->active_division];
+        pattern_division = &mod->patterns[mod->pattern_table[player->song_position]].divisions[player->active_division];
 
         double out = 0;
 

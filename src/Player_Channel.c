@@ -18,6 +18,7 @@ MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
     channel->vibrato_tick = 0;
     channel->volume = 64;
     channel->sample = NULL;
+    channel->sample_data = NULL;
     channel->number = channel_number;
     channel->sample_period_modifier = 1;
     channel->slide_target = 0;
@@ -27,7 +28,7 @@ MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
 
 double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod){
 
-    MOD_Channel* channel = mod->patterns[mod->pattern_table[player->song_position]]->divisions[player->active_division]->channels[player_channel->number];
+    MOD_Channel* channel = &mod->patterns[mod->pattern_table[player->song_position]].divisions[player->active_division].channels[player_channel->number];
     double sample_period = player_channel->sample_period;
 
     sample_period *= player_channel->sample_period_modifier;
@@ -35,6 +36,7 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
     double out;
     if(player_channel->sample != 0){
         MOD_Sample* sample = player_channel->sample;
+        const int8_t* sample_data = player_channel->sample_data;
 
         double thr = sample_period/(double)AMIGA_FREQUENCY*player_channel->sample_rate;
 
@@ -43,16 +45,16 @@ double MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* p
             player_channel->tick -= thr;
             player_channel->sample_tracker++;
 
-            if(sample->repeat_length*2 > 1){
-                while(player_channel->sample_tracker >= sample->length*2){
-                    player_channel->sample_tracker -= sample->repeat_length*2; 
+            if(MOD_Sample_get_repeat_length(sample) > 1){
+                while(player_channel->sample_tracker >= MOD_Sample_get_length(sample)*2){
+                    player_channel->sample_tracker -= MOD_Sample_get_repeat_length(sample)*2; 
                 }
             }
         }
 
-        if(player_channel->sample_tracker < sample->length*2){
-            int di = ((int)player_channel->sample_tracker)%(sample->length*2);
-            int current_byte = sample->data[di];
+        if(player_channel->sample_tracker < MOD_Sample_get_length(sample)*2){
+            int di = ((int)player_channel->sample_tracker)%(MOD_Sample_get_length(sample)*2);
+            int current_byte = sample_data[di];
             out = current_byte * sample->volume*0.5/64. * player_channel->volume;
             //fprintf(stderr, "[%i] svol: %f, pcvol: %f\n", player->active_division, sample->volume, player_channel->volume);
         }else{
@@ -190,9 +192,9 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
 }
 
 void MOD_Player_Channel_tick(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod){
-    MOD_Channel* channel = mod->patterns[mod->pattern_table[player->song_position]]->divisions[player->active_division]->channels[player_channel->number];
+    MOD_Channel* channel = &mod->patterns[mod->pattern_table[player->song_position]].divisions[player->active_division].channels[player_channel->number];
 
-    MOD_Player_Channel_process_effect(player_channel, player, mod, channel->effect);
+    MOD_Player_Channel_process_effect(player_channel, player, mod, MOD_Channel_get_effect(channel));
     player_channel->vibrato_tick++;
 
     //fprintf(stderr, "[%i] tick: %i\n", player->active_division, player->tick);
@@ -200,25 +202,26 @@ void MOD_Player_Channel_tick(MOD_Player_Channel* player_channel, MOD_Player* pla
 }
 
 void MOD_Player_Channel_division(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod){
-    MOD_Channel* channel = mod->patterns[mod->pattern_table[player->song_position]]->divisions[player->active_division]->channels[player_channel->number];
+    MOD_Channel* channel = &mod->patterns[mod->pattern_table[player->song_position]].divisions[player->active_division].channels[player_channel->number];
 
 
 
-    if(channel->sample != 0){
+    if(MOD_Channel_get_sample(channel) != 0){
 
-        int effect = (channel->effect&0xf00) >> 8;
+        int effect = (MOD_Channel_get_effect(channel)&0xf00) >> 8;
         if(effect == EFFECT_SLIDE_UP || effect == EFFECT_SLIDE_DOWN){
             player_channel->slide_period = player_channel->sample_period;
         }
         if(effect == EFFECT_SLIDE_TO_NOTE || effect == EFFECT_CONTINUE_SLIDE_TO_NOTE_AND_VOLUME_SLIDE){
             player_channel->slide_period = player_channel->sample_period;
-            player_channel->slide_target = channel->sample_period;
+            player_channel->slide_target = MOD_Channel_get_sample_period(channel);
         }
 
-        if(channel->sample_period){
-            player_channel->sample_period = channel->sample_period;
+        if(MOD_Channel_get_sample_period(channel)){
+            player_channel->sample_period = MOD_Channel_get_sample_period(channel);
         }
-        player_channel->sample = mod->samples[channel->sample-1];
+        player_channel->sample = &mod->samples[MOD_Channel_get_sample(channel)-1];
+        player_channel->sample_data = mod->sample_datas[MOD_Channel_get_sample(channel)-1];
         player_channel->sample_tracker = 0;
         MOD_Player_Channel_set_volume(player_channel, 64);
     }

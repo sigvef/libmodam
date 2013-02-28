@@ -28,13 +28,14 @@
 /* http://archive.cs.uu.nl/pub/MIDI/DOC/MOD-info */
 
 typedef struct {
-    char* title;
-    MOD_Sample** samples;
+    const char* title;
+    MOD_Sample* samples;
     int8_t n_samples;
     int8_t n_song_positions;
     int8_t historical_127;
-    int8_t*pattern_table;
-    MOD_Pattern** patterns;
+    const int8_t* pattern_table;
+    MOD_Pattern* patterns;
+    const int8_t* sample_datas[31];
 } MOD;
 
 MOD* MOD_load(const int8_t *data);

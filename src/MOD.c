@@ -21,9 +21,8 @@ MOD* MOD_load(const int8_t* _data){
     mod->n_samples = 31;
 
     /* read the samples */
-    mod->samples = (MOD_Sample*) malloc(sizeof(MOD_Sample)*mod->n_samples);
+    mod->samples = (MOD_Sample*) data;
     for(int i=0;i<mod->n_samples;i++){
-        mod->samples[i] = (MOD_Sample) data;
         data += 30;
     }
 
@@ -41,14 +40,14 @@ MOD* MOD_load(const int8_t* _data){
 
     data += 4; /* skip magic letters (usually "M.K") */
 
-    mod->patterns = (MOD_Pattern**) malloc(sizeof(MOD_Pattern)*n_patterns);
+    mod->patterns = (MOD_Pattern*) data;
     for(int i=0;i<n_patterns;i++){
-        mod->patterns[i] = data;
-        data += 64 * 4 * 4;
+        data += 1024;
     }
 
     for(int i=0;i<mod->n_samples;i++){
-        MOD_Sample_loadData(mod->samples[i], &data);
+        mod->sample_datas[i] = data;
+        data += MOD_Sample_get_length(&mod->samples[i])*2;
     }
 
     return mod;

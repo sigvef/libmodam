@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <stdint.h>
 #include "MOD.h"
 
 #define WAVEFORM_SINE 0
@@ -20,6 +21,7 @@ typedef struct {
     int volume_speed;
     double volume;
     MOD_Sample* sample;
+    const int8_t* sample_data;
     double sample_period;
     double sample_period_modifier;
     int number;
