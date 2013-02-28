@@ -31,16 +31,16 @@ MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
 int16_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod){
 
     MOD_Channel* channel = &mod->patterns[mod->pattern_table[player->song_position]].divisions[player->active_division].channels[player_channel->number];
-    double sample_period = player_channel->sample_period;
+    int sample_period = player_channel->sample_period;
 
-    sample_period *= player_channel->sample_period_modifier;
+    sample_period = (sample_period * player_channel->sample_period_modifier) / (1<<15);
 
     int16_t out;
     if(player_channel->sample != 0){
         MOD_Sample* sample = player_channel->sample;
         const int8_t* sample_data = player_channel->sample_data;
 
-        double thr = sample_period/2./TICKSTEP;
+        int thr = sample_period;
 
         while(player_channel->tick > thr){
 
@@ -66,7 +66,7 @@ int16_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
         out = 0;
     }
 
-    player_channel->tick++;
+    player_channel->tick += TICKSTEP;
     return out;
 }
 
@@ -83,7 +83,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
     int x = (effect&0x0f0) >> 4;
     int y =  effect&0x00f;
 
-    player_channel->sample_period_modifier = 1.0;
+    player_channel->sample_period_modifier = 1<<15;
 
     switch(e){
 
@@ -97,13 +97,13 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
             if(x*16+y) player_channel->slide_speed = x*16+y;
             player_channel->slide_period -= player_channel->slide_speed;
             player_channel->slide_period = MAX(player_channel->slide_period, 113);
-            player_channel->sample_period_modifier = player_channel->slide_period/player_channel->sample_period;
+            player_channel->sample_period_modifier = (1<<15)*player_channel->slide_period/player_channel->sample_period;
             break;
         case EFFECT_SLIDE_DOWN:
             if(x*16+y) player_channel->slide_speed = x*16+y;
             player_channel->slide_period += player_channel->slide_speed;
             player_channel->slide_period = MIN(player_channel->slide_period, 856);
-            player_channel->sample_period_modifier = player_channel->slide_period/player_channel->sample_period;
+            player_channel->sample_period_modifier = (1<<15)*player_channel->slide_period/player_channel->sample_period;
             break;
         case EFFECT_SLIDE_TO_NOTE:
             if(x*16+y) player_channel->slide_speed = x*16+y;
@@ -118,7 +118,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
                     player_channel->slide_period = player_channel->slide_target;
                 }
             }
-            player_channel->sample_period_modifier = player_channel->slide_period/player_channel->sample_period;
+            player_channel->sample_period_modifier = (1<<15)*player_channel->slide_period/player_channel->sample_period;
             break;
         case EFFECT_VIBRATO:
             player_channel->vibrato_waveform = WAVEFORM_SINE;
@@ -141,7 +141,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
                     }
                 }
             }
-            player_channel->sample_period_modifier = player_channel->slide_period/player_channel->sample_period;
+            player_channel->sample_period_modifier = (1<<15)*player_channel->slide_period/player_channel->sample_period;
             MOD_Player_Channel_set_volume(player_channel, player_channel->volume + x == 0 ? -y : x);
             break;
         case EFFECT_CONTINUE_VIBRATO_TO_NOTE_AND_VOLUME_SLIDE:

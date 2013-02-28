@@ -11,9 +11,9 @@
 #define WAVEFORM_NO_RETRIGGER 4
 
 typedef struct {
-    double sample_tracker;
-    double tick;
-    double sample_rate;
+    int sample_tracker;
+    int tick;
+    int sample_rate;
     int vibrato_waveform;
     double vibrato_amplitude;
     double vibrato_period;
@@ -22,25 +22,25 @@ typedef struct {
     int volume;
     MOD_Sample* sample;
     const int8_t* sample_data;
-    double sample_period;
-    double sample_period_modifier;
+    int sample_period;
+    int sample_period_modifier;
     int number;
-    double slide_period;
-    double slide_target;
-    double slide_speed;
+    int slide_period;
+    int slide_target;
+    int slide_speed;
 } MOD_Player_Channel;
 
 typedef struct{
     MOD_Player_Channel* channels[4];
-    double tick;
+    int tick;
     int song_position;
     int next_song_position;
     int active_division;
     int next_division;
     int ticks_per_division;
-    double sample_rate;
-    double tickticker_threshold;
-    double tickticker;
+    int sample_rate;
+    int tickticker_threshold;
+    int tickticker;
     MOD* mod;
 } MOD_Player;
 
