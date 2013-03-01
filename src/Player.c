@@ -25,53 +25,57 @@ void MOD_Player_set_mod(MOD_Player* player, MOD* mod){
         player->song_position = mod->n_song_positions-1;
         player->tick = player->ticks_per_division;
         player->active_division = 63;
-        MOD_Player_tick(player, mod);
+        player->mod = mod;
+        {int i;for(i=0;i<4;i++){
+            player->channels[i]->sample = NULL;
+        }}
+        MOD_Player_tick(player);
     }
 }
 
 
-int16_t MOD_Player_play(MOD_Player* player, MOD*mod){
+int16_t MOD_Player_play(MOD_Player* player){
 
     int16_t out = 0;
 
-    out += MOD_Player_Channel_step(player->channels[0], player, mod)/4;
-    out += MOD_Player_Channel_step(player->channels[1], player, mod)/4;
-    out += MOD_Player_Channel_step(player->channels[2], player, mod)/4;
-    out += MOD_Player_Channel_step(player->channels[3], player, mod)/4;
+    out += MOD_Player_Channel_step(player->channels[0], player, player->mod)/4;
+    out += MOD_Player_Channel_step(player->channels[1], player, player->mod)/4;
+    out += MOD_Player_Channel_step(player->channels[2], player, player->mod)/4;
+    out += MOD_Player_Channel_step(player->channels[3], player, player->mod)/4;
 
     player->tickticker+=2;
     while(player->tickticker > player->tickticker_threshold){
         player->tickticker -= player->tickticker_threshold;
-        MOD_Player_tick(player, mod);
+        MOD_Player_tick(player);
     }
 
     return out;
 }
 
 
-void MOD_Player_tick(MOD_Player* player, MOD* mod){
+void MOD_Player_tick(MOD_Player* player){
 
     player->tick++;
 
     while(player->tick > player->ticks_per_division){
         player->tick -= player->ticks_per_division;
-        MOD_Player_division(player, mod);
+        MOD_Player_division(player);
     }
 
-    MOD_Player_Channel_tick(player->channels[0], player, mod);
-    MOD_Player_Channel_tick(player->channels[1], player, mod);
-    MOD_Player_Channel_tick(player->channels[2], player, mod);
-    MOD_Player_Channel_tick(player->channels[3], player, mod);
+    MOD_Player_Channel_tick(player->channels[0], player, player->mod);
+    MOD_Player_Channel_tick(player->channels[1], player, player->mod);
+    MOD_Player_Channel_tick(player->channels[2], player, player->mod);
+    MOD_Player_Channel_tick(player->channels[3], player, player->mod);
 }
 
 
-void MOD_Player_division(MOD_Player* player, MOD* mod){
+void MOD_Player_division(MOD_Player* player){
 
         player->active_division++;
         if(player->active_division > 63){
             player->active_division = 0;
             player->song_position++;
-            if(player->song_position >= mod->n_song_positions){
+            if(player->song_position >= player->mod->n_song_positions){
                 player->song_position = 0; 
             }
         }
@@ -85,8 +89,8 @@ void MOD_Player_division(MOD_Player* player, MOD* mod){
             player->active_division = player->next_division;
             player->next_division = -1;
         }
-        MOD_Player_Channel_division(player->channels[0], player, mod);
-        MOD_Player_Channel_division(player->channels[1], player, mod);
-        MOD_Player_Channel_division(player->channels[2], player, mod);
-        MOD_Player_Channel_division(player->channels[3], player, mod);
+        MOD_Player_Channel_division(player->channels[0], player, player->mod);
+        MOD_Player_Channel_division(player->channels[1], player, player->mod);
+        MOD_Player_Channel_division(player->channels[2], player, player->mod);
+        MOD_Player_Channel_division(player->channels[3], player, player->mod);
 }
