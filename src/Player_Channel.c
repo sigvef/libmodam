@@ -7,7 +7,7 @@
 
 #define PI 3.142592
 
-#define TICKSTEP 80
+#define TICKSTEP 80*2
 
 MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
     MOD_Player_Channel* channel = (MOD_Player_Channel*) malloc(sizeof(MOD_Player_Channel));
@@ -124,8 +124,10 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
             player_channel->vibrato_waveform = WAVEFORM_SINE;
             if(y) player_channel->vibrato_amplitude = y/16.;
             if(x) player_channel->vibrato_period = x/64.;
+            /*
             player_channel->sample_period_modifier /= pow(2, player_channel->vibrato_amplitude*sin(
                 player_channel->vibrato_period*player_channel->vibrato_tick*PI*2)/12.);
+            */
             break;
         case EFFECT_CONTINUE_SLIDE_TO_NOTE_AND_VOLUME_SLIDE:
             if(x != 0 || y != 0){
@@ -146,8 +148,10 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
             break;
         case EFFECT_CONTINUE_VIBRATO_TO_NOTE_AND_VOLUME_SLIDE:
             MOD_Player_Channel_set_volume(player_channel, player_channel->volume + (x == 0 ? -y : x));
+            /*
             player_channel->sample_period_modifier /= pow(2, 2*player_channel->vibrato_amplitude*sin(
                 player_channel->vibrato_period*player_channel->vibrato_tick*PI)/12.);
+            */
             break;
         case EFFECT_TREMOLO:
             break;
@@ -198,8 +202,6 @@ void MOD_Player_Channel_tick(MOD_Player_Channel* player_channel, MOD_Player* pla
 
     MOD_Player_Channel_process_effect(player_channel, player, mod, MOD_Channel_get_effect(channel));
     player_channel->vibrato_tick++;
-
-    //fprintf(stderr, "[%i] tick: %i\n", player->active_division, player->tick);
 
 }
 

@@ -35,16 +35,23 @@ def main():
         hfile.write('#ifndef ' + guardname + '\n')
         hfile.write('#define ' + guardname + '\n')
 
+        hfile.write('#define ' + baseoutname.upper() + '_N ' + str(len(infiles)) + 'L\n')
+
+        modnames = []
+
         for filename in infiles:
             with open(filename, 'r') as f:
 
                 basename = re.sub('[^a-zA-Z0-9]', '_', (baseoutname.upper() + '_' + os.path.basename(filename).upper()))
+
+                modnames.append(basename);
 
                 bytes = map(str,map(ord,[byte for byte in f.read()]))
 
                 hfile.write('static const int8_t ' + basename + '[' + str(len(bytes))+ 'L] = {' + ','.join(bytes) + '};\n')
                 hfile.write('static const long ' + basename + '_LENGTH = ' + str(len(bytes)) + 'L;\n')
 
+        hfile.write('static const int8_t* ' + baseoutname.upper() + '['+str(len(modnames)) + 'L] = {'+ ','.join(modnames) + '};\n')
 
         hfile.write('#endif')
 

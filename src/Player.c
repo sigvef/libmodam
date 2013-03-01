@@ -21,10 +21,12 @@ MOD_Player* MOD_Player_create(){
 }
 
 void MOD_Player_set_mod(MOD_Player* player, MOD* mod){
-    player->song_position = mod->n_song_positions-1;
-    player->tick = player->ticks_per_division;
-    player->active_division = 63;
-    MOD_Player_tick(player, mod);
+    if(mod){
+        player->song_position = mod->n_song_positions-1;
+        player->tick = player->ticks_per_division;
+        player->active_division = 63;
+        MOD_Player_tick(player, mod);
+    }
 }
 
 
@@ -32,12 +34,12 @@ int16_t MOD_Player_play(MOD_Player* player, MOD*mod){
 
     int16_t out = 0;
 
-    out += MOD_Player_Channel_step(player->channels[0], player, mod)/1024;
-    out += MOD_Player_Channel_step(player->channels[1], player, mod)/1024;
-    out += MOD_Player_Channel_step(player->channels[2], player, mod)/1024;
-    out += MOD_Player_Channel_step(player->channels[3], player, mod)/1024;
+    out += MOD_Player_Channel_step(player->channels[0], player, mod)/4;
+    out += MOD_Player_Channel_step(player->channels[1], player, mod)/4;
+    out += MOD_Player_Channel_step(player->channels[2], player, mod)/4;
+    out += MOD_Player_Channel_step(player->channels[3], player, mod)/4;
 
-    player->tickticker+=1;
+    player->tickticker+=2;
     while(player->tickticker > player->tickticker_threshold){
         player->tickticker -= player->tickticker_threshold;
         MOD_Player_tick(player, mod);
