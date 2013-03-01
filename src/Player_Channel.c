@@ -33,6 +33,9 @@ int16_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
     MOD_Channel* channel = &mod->patterns[mod->pattern_table[player->song_position]].divisions[player->active_division].channels[player_channel->number];
     int sample_period = player_channel->sample_period;
 
+    if(player_channel->sample_period_modifier == 0){
+        player_channel->sample_period_modifier = 1<<15;
+    }
     sample_period = (sample_period * player_channel->sample_period_modifier) / (1<<15);
 
     int16_t out;
