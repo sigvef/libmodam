@@ -7,8 +7,6 @@
 
 #define PI 3.142592
 
-#define TICKSTEP 80
-
 /* allocates, inits and returns a MOD_Player */
 MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
 
@@ -63,10 +61,9 @@ int16_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
 
 
         /* advance the sample tracker when needed to get the correct sample period */
-        int thr = sample_period;
-        while(player_channel->tick > thr){
+        while(player_channel->tick > sample_period){
 
-            player_channel->tick -= thr;
+            player_channel->tick -= sample_period;
             player_channel->sample_tracker++;
 
             /* if this is a repeating sample, repeat when neccessary */
@@ -92,7 +89,7 @@ int16_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
     }
 
     /* advance internal tick state */
-    player_channel->tick += TICKSTEP;
+    player_channel->tick += AMIGA_FREQUENCY/player->sample_rate;
 
     /* finally return the sample */
     return out;
