@@ -26,6 +26,8 @@
 
 /* http://www.mediatel.lu/workshop/audio/fileformat/h_mod.html */
 /* http://archive.cs.uu.nl/pub/MIDI/DOC/MOD-info */
+/* https://bel.fi/alankila/modguide/ */
+/* http://16-bits.org/mod/ */
 
 typedef struct {
     const char* title;

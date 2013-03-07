@@ -9,13 +9,16 @@ int main(){
 
     MOD* mod = MOD_load(MODFILES_CLASS05_MOD);
 
-    MOD_Player* player = MOD_Player_create(44100);
+    int sample_rate = 44100;
+
+    MOD_Player* player = MOD_Player_create(sample_rate);
 
     MOD_Player_set_mod(player, mod);
 
+
     while(1){
 
-        MOD_Player_step(player);
+        MOD_Player_step(player, 1000000/sample_rate);
 
         int16_t out = MOD_Player_play(player);
         putchar(out&0xff);

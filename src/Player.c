@@ -19,8 +19,8 @@ MOD_Player* MOD_Player_create(int sample_rate){
     player->channels[1] = MOD_Player_Channel_create(1);
     player->channels[2] = MOD_Player_Channel_create(2);
     player->channels[3] = MOD_Player_Channel_create(3);
-    player->tickticker_threshold = 10*AMIGA_FREQUENCY/(double)player->sample_rate;
-    player->tickticker = 0;
+    player->microseconds_per_tick = 20000;
+    player->microseconds = 0;
     player->mod = NULL;
 
     /* ...and finally return the player! */
@@ -47,24 +47,24 @@ void MOD_Player_set_mod(MOD_Player* player, MOD* mod){
  * sample. The internal state is also advanced. */
 int16_t MOD_Player_play(MOD_Player* player){
 
-    int16_t out = 0;
+    int32_t out = 0;
 
     /* generate sound for each of the four channels */
-    out += MOD_Player_Channel_step(player->channels[0], player, player->mod)/4;
-    out += MOD_Player_Channel_step(player->channels[1], player, player->mod)/4;
-    out += MOD_Player_Channel_step(player->channels[2], player, player->mod)/4;
-    out += MOD_Player_Channel_step(player->channels[3], player, player->mod)/4;
+    out += MOD_Player_Channel_step(player->channels[0], player, player->mod);
+    out += MOD_Player_Channel_step(player->channels[1], player, player->mod);
+    out += MOD_Player_Channel_step(player->channels[2], player, player->mod);
+    out += MOD_Player_Channel_step(player->channels[3], player, player->mod);
 
-    /* return the collected sample */
-    return out;
+    /* return the collected scaled down sample */
+    return out>>2;
 }
 
-void MOD_Player_step(MOD_Player*player){
+void MOD_Player_step(MOD_Player*player, int microseconds){
 
     /* advance the internal state */
-    player->tickticker++;
-    while(player->tickticker > player->tickticker_threshold){
-        player->tickticker -= player->tickticker_threshold;
+    player->microseconds += microseconds;
+    while(player->microseconds > player->microseconds_per_tick){
+        player->microseconds -= player->microseconds_per_tick;
         MOD_Player_tick(player);
     }
 }

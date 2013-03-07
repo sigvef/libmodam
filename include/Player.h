@@ -38,14 +38,14 @@ typedef struct{
     int next_division;
     int ticks_per_division;
     int sample_rate;
-    int tickticker_threshold;
-    int tickticker;
+    int microseconds;
+    int microseconds_per_tick;
     MOD* mod;
 } MOD_Player;
 
 MOD_Player* MOD_Player_create(int sample_rate);
 int16_t MOD_Player_play(MOD_Player* player);
-void MOD_Player_step(MOD_Player* player);
+void MOD_Player_step(MOD_Player* player, int microseconds);
 void MOD_Player_tick(MOD_Player* player);
 void MOD_Player_set_mod(MOD_Player* player, MOD* mod);
 void MOD_Player_division(MOD_Player* player);
