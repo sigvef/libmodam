@@ -9,7 +9,7 @@ int main(){
 
     MOD* mod = MOD_load(MODFILES_CLASS05_MOD);
 
-    int sample_rate = 44100;
+    int sample_rate = 48000;
 
     MOD_Player* player = MOD_Player_create(sample_rate);
 

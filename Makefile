@@ -26,7 +26,7 @@ debug: all test
 
 
 play: all test
-	bin/test | aplay -r44100 -f S16_LE
+	bin/test | aplay -r48000 -f S16_LE
 
 clean:
 	rm bin/*
