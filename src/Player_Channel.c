@@ -7,7 +7,7 @@
 
 #define PI 3.142592
 
-#define TICKSTEP 80*2
+#define TICKSTEP 80
 
 /* allocates, inits and returns a MOD_Player */
 MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
@@ -18,7 +18,6 @@ MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
     /* ...init struct fields... */
     channel->sample_tracker = 0;
     channel->tick = 0;
-    channel->sample_rate = 44100;
     channel->vibrato_waveform = WAVEFORM_SINE;
     channel->vibrato_amplitude = 0;
     channel->vibrato_period = 0;

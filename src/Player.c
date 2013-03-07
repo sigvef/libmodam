@@ -3,7 +3,7 @@
 #include "MOD.h"
 
 /* allocates, inits and returns a MOD_Player */
-MOD_Player* MOD_Player_create(){
+MOD_Player* MOD_Player_create(int sample_rate){
 
     /* malloc... */
     MOD_Player* player = (MOD_Player*) malloc(sizeof(MOD_Player));
@@ -14,7 +14,7 @@ MOD_Player* MOD_Player_create(){
     player->next_song_position = -1;
     player->active_division = 0;
     player->ticks_per_division = 6;
-    player->sample_rate = 44100;
+    player->sample_rate = sample_rate;
     player->channels[0] = MOD_Player_Channel_create(0);
     player->channels[1] = MOD_Player_Channel_create(1);
     player->channels[2] = MOD_Player_Channel_create(2);
@@ -56,7 +56,7 @@ int16_t MOD_Player_play(MOD_Player* player){
     out += MOD_Player_Channel_step(player->channels[3], player, player->mod)/4;
 
     /* advance the internal state */
-    player->tickticker+=2;
+    player->tickticker+=1;
     while(player->tickticker > player->tickticker_threshold){
         player->tickticker -= player->tickticker_threshold;
         MOD_Player_tick(player);

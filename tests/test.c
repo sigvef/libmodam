@@ -9,14 +9,14 @@ int main(){
 
     MOD* mod = MOD_load(MODFILES_CLASS05_MOD);
 
-    MOD_Player* player = MOD_Player_create();
+    MOD_Player* player = MOD_Player_create(44100);
 
     MOD_Player_set_mod(player, mod);
 
     while(1){
-        int16_t out = MOD_Player_play(player, mod);
-        putchar((out&0xff00) >> 8);
+        int16_t out = MOD_Player_play(player);
         putchar(out&0xff);
+        putchar((out&0xff00) >> 8);
     }
 
     return 0;

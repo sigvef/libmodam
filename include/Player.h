@@ -13,7 +13,6 @@
 typedef struct {
     int sample_tracker;
     int tick;
-    int sample_rate;
     int vibrato_waveform;
     double vibrato_amplitude;
     double vibrato_period;
@@ -44,7 +43,7 @@ typedef struct{
     MOD* mod;
 } MOD_Player;
 
-MOD_Player* MOD_Player_create();
+MOD_Player* MOD_Player_create(int sample_rate);
 int16_t MOD_Player_play(MOD_Player* player);
 void MOD_Player_tick(MOD_Player* player);
 void MOD_Player_set_mod(MOD_Player* player, MOD* mod);
