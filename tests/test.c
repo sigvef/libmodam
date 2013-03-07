@@ -14,6 +14,9 @@ int main(){
     MOD_Player_set_mod(player, mod);
 
     while(1){
+
+        MOD_Player_step(player);
+
         int16_t out = MOD_Player_play(player);
         putchar(out&0xff);
         putchar((out&0xff00) >> 8);

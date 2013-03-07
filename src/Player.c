@@ -55,15 +55,18 @@ int16_t MOD_Player_play(MOD_Player* player){
     out += MOD_Player_Channel_step(player->channels[2], player, player->mod)/4;
     out += MOD_Player_Channel_step(player->channels[3], player, player->mod)/4;
 
+    /* return the collected sample */
+    return out;
+}
+
+void MOD_Player_step(MOD_Player*player){
+
     /* advance the internal state */
-    player->tickticker+=1;
+    player->tickticker++;
     while(player->tickticker > player->tickticker_threshold){
         player->tickticker -= player->tickticker_threshold;
         MOD_Player_tick(player);
     }
-
-    /* return the collected sample */
-    return out;
 }
 
 
