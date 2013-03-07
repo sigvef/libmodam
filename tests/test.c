@@ -15,10 +15,9 @@ int main(){
 
     MOD_Player_set_mod(player, mod);
 
-
     while(1){
 
-        MOD_Player_step(player, 1000000/sample_rate);
+        MOD_Player_step(player, 1000000/sample_rate+1);
 
         int16_t out = MOD_Player_play(player);
         putchar(out&0xff);

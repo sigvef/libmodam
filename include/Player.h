@@ -40,6 +40,7 @@ typedef struct{
     int sample_rate;
     int microseconds;
     int microseconds_per_tick;
+    int bpm;
     MOD* mod;
 } MOD_Player;
 

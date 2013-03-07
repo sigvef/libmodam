@@ -19,7 +19,8 @@ MOD_Player* MOD_Player_create(int sample_rate){
     player->channels[1] = MOD_Player_Channel_create(1);
     player->channels[2] = MOD_Player_Channel_create(2);
     player->channels[3] = MOD_Player_Channel_create(3);
-    player->microseconds_per_tick = 20000;
+    player->bpm = 125;
+    player->microseconds_per_tick = 2500000/player->bpm;
     player->microseconds = 0;
     player->mod = NULL;
 

@@ -243,16 +243,17 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
         case EFFECT_SET_SPEED:
 
             ;int speed = x*16+y;
-            if(speed == 0){
-                speed = 1;
-            }
 
             if(speed > 32){
-                speed = speed*4./128.;
-                speed = 4;
+                player->bpm = speed;
+                player->microseconds_per_tick = 2500000/player->bpm;
+            }else{
+                if(speed == 0){
+                    speed = 1;
+                }
+                player->ticks_per_division = speed;  
             }
 
-            player->ticks_per_division = speed;  
             break;
         default:
             break;
