@@ -7,7 +7,7 @@
 
 int main(){
 
-    MOD* mod = MOD_load(MODFILES_CLASS05_MOD);
+    MOD* mod = MOD_load(MODFILES_BANANASPLIT_MOD);
 
     int sample_rate = 48000;
 

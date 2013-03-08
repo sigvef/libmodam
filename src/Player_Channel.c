@@ -48,7 +48,7 @@ int32_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
     int32_t out;
 
     /* if we have a sample bound, play it */
-    if(player_channel->sample != 0){
+    if(player_channel->sample != NULL){
 
         /* convenience references */
         MOD_Sample* sample = player_channel->sample;
@@ -71,7 +71,7 @@ int32_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
         }
 
         /* generate the sample to output */
-        if(player_channel->sample_tracker < sample_length_times_two*2){
+        if(player_channel->sample_tracker < sample_length_times_two){
             int current_byte = sample_data[
                 player_channel->sample_tracker - player_channel->sample_tracker/sample_length_times_two
             ];
@@ -109,7 +109,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
     int y =  effect&0x00f;
 
     /* init the modifier to 1<<15, aka no modification */
-    player_channel->sample_period_modifier = 1<<15;
+    player_channel->sample_period_modifier = (1<<15);
 
     switch(e){
 
@@ -209,7 +209,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
 
         /* sets the volume for this channel */
         case EFFECT_SET_VOLUME:
-            MOD_Player_Channel_set_volume(player_channel, (x<<4) | y);
+            MOD_Player_Channel_set_volume(player_channel, x*16+y);
             break;
 
         /* jumps to a given pattern after the current division */
@@ -262,26 +262,33 @@ void MOD_Player_Channel_division(MOD_Player_Channel* player_channel, MOD_Player*
     /* convenience pointer */
     MOD_Channel* channel = &mod->patterns[mod->pattern_table[player->song_position]].divisions[player->active_division].channels[player_channel->number];
 
+    //fprintf(stderr, "[%i] sample: %i\n", player->active_division, MOD_Channel_get_sample(channel));
 
-    /* only do stuff if we have a sample bound */
-    if(MOD_Channel_get_sample(channel) != 0){
+    /* get the effect nybble */
+    int effect = (MOD_Channel_get_effect(channel)&0xf00) >> 8;
+    int channel_sample_period = MOD_Channel_get_sample_period(channel);
 
-        /* get the effect nybble */
-        int effect = (MOD_Channel_get_effect(channel)&0xf00) >> 8;
+    if(channel_sample_period != 0){
+
+        /* refresh sample period */
+        if(channel_sample_period){
+            player_channel->sample_period = channel_sample_period;
+        }
 
         /* do effect-specific updates of channel state */
         if(effect == EFFECT_SLIDE_UP || effect == EFFECT_SLIDE_DOWN){
             player_channel->slide_period = player_channel->sample_period;
         }
+
         if(effect == EFFECT_SLIDE_TO_NOTE || effect == EFFECT_CONTINUE_SLIDE_TO_NOTE_AND_VOLUME_SLIDE){
             player_channel->slide_period = player_channel->sample_period;
-            player_channel->slide_target = MOD_Channel_get_sample_period(channel);
+            player_channel->slide_target = channel_sample_period;
         }
+    }
 
-        /* refresh sample period */
-        if(MOD_Channel_get_sample_period(channel)){
-            player_channel->sample_period = MOD_Channel_get_sample_period(channel);
-        }
+    /* only do stuff if we have a sample bound */
+    if(MOD_Channel_get_sample(channel) != 0){
+
 
         /* update more state from the channel */
         player_channel->sample = &mod->samples[MOD_Channel_get_sample(channel)-1];
