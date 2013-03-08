@@ -16,10 +16,6 @@ MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
     /* ...init struct fields... */
     channel->sample_tracker = 0;
     channel->tick = 0;
-    channel->vibrato_waveform = WAVEFORM_SINE;
-    channel->vibrato_amplitude = 0;
-    channel->vibrato_period = 0;
-    channel->vibrato_tick = 0;
     channel->volume = 64;
     channel->sample = NULL;
     channel->sample_data = NULL;
@@ -33,7 +29,7 @@ MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
 }
 
 /* The main channel play function. This gets called by the player. */
-int16_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod){
+int32_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod){
 
     /* get a reference to the current channel for convenience */
     MOD_Channel* channel = &mod->patterns[mod->pattern_table[player->song_position]].divisions[player->active_division].channels[player_channel->number];
@@ -49,8 +45,7 @@ int16_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
     /* modify the sample period (vibrato effects, slides etc) */
     sample_period = (sample_period * player_channel->sample_period_modifier) / (1<<15);
 
-
-    int16_t out;
+    int32_t out;
 
     /* if we have a sample bound, play it */
     if(player_channel->sample != 0){
@@ -58,6 +53,7 @@ int16_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
         /* convenience references */
         MOD_Sample* sample = player_channel->sample;
         const int8_t* sample_data = player_channel->sample_data;
+        int sample_length_times_two = MOD_Sample_get_length(sample)*2;
 
 
         /* advance the sample tracker when needed to get the correct sample period */
@@ -68,17 +64,18 @@ int16_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
 
             /* if this is a repeating sample, repeat when neccessary */
             if(MOD_Sample_get_repeat_length(sample) > 1){
-                while(player_channel->sample_tracker >= MOD_Sample_get_length(sample)*2){
+                while(player_channel->sample_tracker >= sample_length_times_two){
                     player_channel->sample_tracker -= MOD_Sample_get_repeat_length(sample)*2; 
                 }
             }
         }
 
         /* generate the sample to output */
-        if(player_channel->sample_tracker < MOD_Sample_get_length(sample)*2){
-            int di = ((int)player_channel->sample_tracker)%(MOD_Sample_get_length(sample)*2);
-            int current_byte = sample_data[di];
-            out = current_byte * (((int)sample->volume * (int)player_channel->volume)>>5);
+        if(player_channel->sample_tracker < sample_length_times_two*2){
+            int current_byte = sample_data[
+                player_channel->sample_tracker - player_channel->sample_tracker/sample_length_times_two
+            ];
+            out = current_byte * sample->volume * player_channel->volume;
         }else{
             out = 0;
         }
@@ -158,16 +155,8 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
             break;
 
 
-        /* oscillates the sample period to create a vibrato effect */
+        /* not implemented */
         case EFFECT_VIBRATO:
-            player_channel->vibrato_waveform = WAVEFORM_SINE;
-            if(y) player_channel->vibrato_amplitude = y/16.;
-            if(x) player_channel->vibrato_period = x/64.;
-            /* currently we disable this , as it is really slow and uses sin */
-            /*
-            player_channel->sample_period_modifier /= pow(2, player_channel->vibrato_amplitude*sin(
-                player_channel->vibrato_period*player_channel->vibrato_tick*PI*2)/12.);
-            */
             break;
 
         /* does what it says on the tin */
@@ -190,13 +179,9 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
             break;
 
 
-        /* does what it says on the tin */
+        /* does what it says on the tin (well, except the vibrato which is not implemented */
         case EFFECT_CONTINUE_VIBRATO_TO_NOTE_AND_VOLUME_SLIDE:
             MOD_Player_Channel_set_volume(player_channel, player_channel->volume + (x == 0 ? -y : x));
-            /*
-            player_channel->sample_period_modifier /= pow(2, 2*player_channel->vibrato_amplitude*sin(
-                player_channel->vibrato_period*player_channel->vibrato_tick*PI)/12.);
-            */
             break;
 
         /* not implemented */
@@ -269,10 +254,6 @@ void MOD_Player_Channel_tick(MOD_Player_Channel* player_channel, MOD_Player* pla
 
     /* process the current effect */
     MOD_Player_Channel_process_effect(player_channel, player, mod, MOD_Channel_get_effect(channel));
-
-    /* advance the vibrato tick, which curently does nothing */
-    player_channel->vibrato_tick++;
-
 }
 
 /* advances a division */

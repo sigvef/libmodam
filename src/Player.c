@@ -11,7 +11,8 @@ MOD_Player* MOD_Player_create(int sample_rate){
     /* ...init struct fields... */
     player->tick = 0;
     player->song_position = 0;
-    player->next_song_position = -1;
+    player->next_song_position = 0;
+    player->next_division = 0;
     player->active_division = 0;
     player->ticks_per_division = 6;
     player->sample_rate = sample_rate;
@@ -57,7 +58,7 @@ int16_t MOD_Player_play(MOD_Player* player){
     out += MOD_Player_Channel_step(player->channels[3], player, player->mod);
 
     /* return the collected scaled down sample */
-    return out>>2;
+    return out>>6;
 }
 
 void MOD_Player_step(MOD_Player*player, int microseconds){
