@@ -7,7 +7,7 @@
 
 int main(){
 
-    MOD* mod = MOD_load(MODFILES_TUULENVIRE_MOD);
+    MOD* mod = MOD_load(MODFILES_ELEKFUNK_MOD);
 
     int sample_rate = 48000;
 
