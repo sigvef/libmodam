@@ -51,6 +51,7 @@ typedef struct{
 
 MOD_Player* MOD_Player_create(int sample_rate);
 int16_t MOD_Player_play(MOD_Player* player);
+void MOD_Player_reset(MOD_Player* player, int sample_rate);
 void MOD_Player_step(MOD_Player* player, int microseconds);
 void MOD_Player_tick(MOD_Player* player);
 void MOD_Player_set_mod(MOD_Player* player, MOD* mod);

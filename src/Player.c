@@ -8,7 +8,18 @@ MOD_Player* MOD_Player_create(int sample_rate){
     /* malloc... */
     MOD_Player* player = (MOD_Player*) malloc(sizeof(MOD_Player));
 
-    /* ...init struct fields... */
+    /* ...init... */
+    MOD_Player_reset(player, sample_rate);
+
+    /* ...and finally return the player! */
+    return player;
+}
+
+
+/* resets a player to its default state */
+void MOD_Player_reset(MOD_Player* player, int sample_rate){
+
+    /* init struct fields */
     player->tick = 0;
     player->song_position = 0;
     player->next_song_position = 0;
@@ -27,14 +38,12 @@ MOD_Player* MOD_Player_create(int sample_rate){
     player->division_loop_start = 0;
     player->division_loop_end = 0;
     player->division_loop_count = -1;
-
-    /* ...and finally return the player! */
-    return player;
 }
 
 
 /* Binds a mod to a player, effectively resetting the player */
 void MOD_Player_set_mod(MOD_Player* player, MOD* mod){
+    MOD_Player_reset(player, player->sample_rate);
     if(mod != NULL){
         player->song_position = mod->n_song_positions-1;
         player->tick = player->ticks_per_division;
