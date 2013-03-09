@@ -24,6 +24,9 @@ MOD_Player* MOD_Player_create(int sample_rate){
     player->microseconds_per_tick = 2500000/player->bpm;
     player->microseconds = 0;
     player->mod = NULL;
+    player->division_loop_start = 0;
+    player->division_loop_end = 0;
+    player->division_loop_count = -1;
 
     /* ...and finally return the player! */
     return player;
@@ -39,6 +42,9 @@ void MOD_Player_set_mod(MOD_Player* player, MOD* mod){
         player->mod = mod;
         {int i;for(i=0;i<4;i++){
             player->channels[i]->sample = NULL;
+            {int j;for(j=0;j<31;j++){
+                player->channels[i]->sample_volumes[j] = mod->samples[j].volume;
+            }}
         }}
         MOD_Player_tick(player);
     }
@@ -94,7 +100,16 @@ void MOD_Player_tick(MOD_Player* player){
 /* advances internal state with one MOD division */
 void MOD_Player_division(MOD_Player* player){
 
-    player->active_division++;
+    if(player->division_loop_count == 0 && player->active_division == player->division_loop_end){
+        player->division_loop_count = -1;
+        player->division_loop_start = 0;
+    }
+    if(player->division_loop_count > 0 && player->active_division == player->division_loop_end){
+        player->division_loop_count--;
+        player->active_division = player->division_loop_start;
+    }else{
+        player->active_division++;
+    }
 
     /* if we have advanced enough divisions, advance a song position */
     if(player->active_division > 63){
