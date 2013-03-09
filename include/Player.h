@@ -20,6 +20,7 @@ typedef struct {
     int volume_speed;
     int volume;
     MOD_Sample* sample;
+    int sample_number;
     const int8_t* sample_data;
     int sample_period;
     int sample_period_modifier;
@@ -27,6 +28,7 @@ typedef struct {
     int slide_period;
     int slide_target;
     int slide_speed;
+    int* sample_volumes;
 } MOD_Player_Channel;
 
 typedef struct{
@@ -41,6 +43,9 @@ typedef struct{
     int microseconds;
     int microseconds_per_tick;
     int bpm;
+    int division_loop_start;
+    int division_loop_end;
+    int division_loop_count;
     MOD* mod;
 } MOD_Player;
 
