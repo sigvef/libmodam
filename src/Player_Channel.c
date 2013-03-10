@@ -31,7 +31,7 @@ MOD_Player_Channel_reset(MOD_Player_Channel* player_channel){
     player_channel->volume = 64;
     player_channel->sample = NULL;
     player_channel->sample_data = NULL;
-    player_channel->sample_period_modifier = 1;
+    player_channel->sample_period_modifier = 1<<15;
     player_channel->slide_target = 0;
     player_channel->slide_period = 0;
 }
@@ -41,26 +41,26 @@ int32_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
 
     int32_t out;
 
+
+    /* get a reference to the current channel for convenience */
+    MOD_Channel* channel = &mod->patterns[mod->pattern_table[player->song_position]].divisions[player->active_division].channels[player_channel->number];
+
+    /* make a copy of the base sample period so we can modify it later, if needed */
+    int sample_period = player_channel->sample_period;
+
+    /* hack to fix a rounding bug from the double -> int conversion */
+    if(player_channel->sample_period_modifier == 0){
+        player_channel->sample_period_modifier = 1<<15;
+    }
+
+    /* modify the sample period (vibrato effects, slides etc) */
+    sample_period = (sample_period * player_channel->sample_period_modifier) / (1<<15);
+
+    sample_period = CLAMP(SAMPLE_PERIOD_MIN, (sample_period), SAMPLE_PERIOD_MAX);
+
+
     /* if we have a sample bound, play it */
     if(player_channel->sample != NULL){
-
-        /* get a reference to the current channel for convenience */
-        MOD_Channel* channel = &mod->patterns[mod->pattern_table[player->song_position]].divisions[player->active_division].channels[player_channel->number];
-
-        /* make a copy of the base sample period so we can modify it later, if needed */
-        int sample_period = player_channel->sample_period;
-
-        /* hack to fix a rounding bug from the double -> int conversion */
-        if(player_channel->sample_period_modifier == 0){
-            player_channel->sample_period_modifier = 1<<15;
-        }
-
-        /* modify the sample period (vibrato effects, slides etc) */
-        sample_period = (sample_period * player_channel->sample_period_modifier) / (1<<15);
-
-        sample_period = CLAMP(SAMPLE_PERIOD_MIN, (sample_period), SAMPLE_PERIOD_MAX);
-
-
 
         /* convenience references */
         MOD_Sample* sample = player_channel->sample;
