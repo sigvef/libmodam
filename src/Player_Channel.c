@@ -11,22 +11,31 @@
 MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
 
     /* malloc... */
-    MOD_Player_Channel* channel = (MOD_Player_Channel*) malloc(sizeof(MOD_Player_Channel));
+    MOD_Player_Channel* player_channel = (MOD_Player_Channel*) malloc(sizeof(MOD_Player_Channel));
 
-    /* ...init struct fields... */
-    channel->sample_tracker = 0;
-    channel->tick = 0;
-    channel->volume = 64;
-    channel->sample = NULL;
-    channel->sample_data = NULL;
-    channel->number = channel_number;
-    channel->sample_period_modifier = 1;
-    channel->slide_target = 0;
-    channel->slide_period = 0;
-    channel->sample_volumes = (int*) malloc(sizeof(int)*31);
+    /* ...init... */
+    player_channel->sample_volumes = (int*) malloc(sizeof(int)*31);
+    player_channel->number = channel_number;
+
+    /* ...reset... */
+    MOD_Player_Channel_reset(player_channel);
 
     /* ...and finally return the player! */
-    return channel;
+    return player_channel;
+}
+
+
+MOD_Player_Channel_reset(MOD_Player_Channel* player_channel){
+
+    /* ...init struct fields... */
+    player_channel->sample_tracker = 0;
+    player_channel->tick = 0;
+    player_channel->volume = 64;
+    player_channel->sample = NULL;
+    player_channel->sample_data = NULL;
+    player_channel->sample_period_modifier = 1;
+    player_channel->slide_target = 0;
+    player_channel->slide_period = 0;
 }
 
 /* The main channel play function. This gets called by the player. */
@@ -112,13 +121,6 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
     /* init the modifier to 1<<15, aka no modification */
     player_channel->sample_period_modifier = (1<<15);
 
-    int sample_number = 0;
-    {int i;for(i=0;i<31;i++){
-        if(player_channel->sample == &mod->samples[i]){
-            sample_number = i;
-            break;
-        }
-    }}
 
     switch(e){
 
@@ -185,14 +187,14 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
             }
             player_channel->sample_period_modifier = (1<<15)*player_channel->slide_period/player_channel->sample_period;
             //MOD_Player_Channel_set_volume(player_channel, player_channel->volume + x == 0 ? -y : x);
-            player_channel->sample_volumes[sample_number] = CLAMP(0,player_channel->sample_volumes[sample_number] + x == 0 ? -y : x, 64);
+            player_channel->sample_volumes[player_channel->sample_number] = CLAMP(0,player_channel->sample_volumes[player_channel->sample_number] + x == 0 ? -y : x, 64);
             break;
 
 
         /* does what it says on the tin (well, except the vibrato which is not implemented */
         case EFFECT_CONTINUE_VIBRATO_TO_NOTE_AND_VOLUME_SLIDE:
             //MOD_Player_Channel_set_volume(player_channel, player_channel->volume + (x == 0 ? -y : x));
-            player_channel->sample_volumes[sample_number] = CLAMP(0,player_channel->sample_volumes[sample_number] + (x == 0 ? -y : x), 64);
+            player_channel->sample_volumes[player_channel->sample_number] = CLAMP(0,player_channel->sample_volumes[player_channel->sample_number] + (x == 0 ? -y : x), 64);
             break;
 
         /* not implemented */
@@ -211,7 +213,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
         case EFFECT_VOLUME_SLIDE:
             if(x || y) player_channel->volume_speed = x== 0 ? -y : x;
             //MOD_Player_Channel_set_volume(player_channel, player_channel->volume + player_channel->volume_speed);
-            player_channel->sample_volumes[sample_number] = CLAMP(0,player_channel->sample_volumes[sample_number] + player_channel->volume_speed, 64);
+            player_channel->sample_volumes[player_channel->sample_number] = CLAMP(0,player_channel->sample_volumes[player_channel->sample_number] + player_channel->volume_speed, 64);
             break;
 
         /* jumps to a given song position after the current division */
@@ -222,7 +224,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
         /* sets the volume for this channel */
         case EFFECT_SET_VOLUME:
             //MOD_Player_Channel_set_volume(player_channel, x*16+y);
-            player_channel->sample_volumes[sample_number] = x*16+y;
+            player_channel->sample_volumes[player_channel->sample_number] = x*16+y;
             break;
 
         /* jumps to a given pattern after the current division */
@@ -235,9 +237,9 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
         /* not implemented */
         case EFFECT_EXTRAS:
             if(x == 10){ // fine volume slide up
-                player_channel->sample_volumes[sample_number] = CLAMP(0,player_channel->sample_volumes[sample_number] + y, 64);
+                player_channel->sample_volumes[player_channel->sample_number] = CLAMP(0,player_channel->sample_volumes[player_channel->sample_number] + y, 64);
             }else if(x == 11){ // fine volume slide down
-                player_channel->sample_volumes[sample_number] = CLAMP(0,player_channel->sample_volumes[sample_number] - y, 64);
+                player_channel->sample_volumes[player_channel->sample_number] = CLAMP(0,player_channel->sample_volumes[player_channel->sample_number] - y, 64);
             }else if(x == 6){ //loop pattern
                 if(y == 0){
                     player->division_loop_start = player->active_division; 
@@ -321,7 +323,7 @@ void MOD_Player_Channel_division(MOD_Player_Channel* player_channel, MOD_Player*
     if(MOD_Channel_get_sample(channel) != 0){
 
         /* update more state from the channel */
-        player_channel->sample_number  = MOD_Channel_get_sample(channel)-1;
+        player_channel->sample_number = MOD_Channel_get_sample(channel)-1;
         player_channel->sample = &mod->samples[player_channel->sample_number];
         player_channel->sample_data = mod->sample_datas[MOD_Channel_get_sample(channel)-1];
         player_channel->sample_tracker = 0;
