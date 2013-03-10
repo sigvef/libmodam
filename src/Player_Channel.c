@@ -7,49 +7,60 @@
 
 #define PI 3.142592
 
+#define SAMPLE_PERIOD_MIN 113
+#define SAMPLE_PERIOD_MAX 856
+
 /* allocates, inits and returns a MOD_Player */
 MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
 
     /* malloc... */
-    MOD_Player_Channel* channel = (MOD_Player_Channel*) malloc(sizeof(MOD_Player_Channel));
+    MOD_Player_Channel* player_channel = (MOD_Player_Channel*) malloc(sizeof(MOD_Player_Channel));
+    player_channel->sample_volumes = (int*) malloc(sizeof(int)*31);
 
     /* ...init struct fields... */
-    channel->sample_tracker = 0;
-    channel->tick = 0;
-    channel->volume = 64;
-    channel->sample = NULL;
-    channel->sample_data = NULL;
-    channel->number = channel_number;
-    channel->sample_period_modifier = 1;
-    channel->slide_target = 0;
-    channel->slide_period = 0;
-    channel->sample_volumes = (int*) malloc(sizeof(int)*31);
+    MOD_Player_Channel_reset(player_channel);
+    player_channel->number = channel_number;
 
     /* ...and finally return the player! */
-    return channel;
+    return player_channel;
+}
+
+MOD_Player_Channel_reset(MOD_Player_Channel* player_channel){
+    player_channel->sample_tracker = 0;
+    player_channel->tick = 0;
+    player_channel->volume = 64;
+    player_channel->sample = NULL;
+    player_channel->sample_data = NULL;
+    player_channel->sample_period_modifier = 1;
+    player_channel->slide_target = 0;
+    player_channel->slide_period = 0;
 }
 
 /* The main channel play function. This gets called by the player. */
 int32_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* player, MOD* mod){
 
-    /* get a reference to the current channel for convenience */
-    MOD_Channel* channel = &mod->patterns[mod->pattern_table[player->song_position]].divisions[player->active_division].channels[player_channel->number];
-
-    /* make a copy of the base sample period so we can modify it later, if needed */
-    int sample_period = player_channel->sample_period;
-
-    /* hack to fix a rounding bug from the double -> int conversion */
-    if(player_channel->sample_period_modifier == 0){
-        player_channel->sample_period_modifier = 1<<15;
-    }
-
-    /* modify the sample period (vibrato effects, slides etc) */
-    sample_period = (sample_period * player_channel->sample_period_modifier) / (1<<15);
-
     int32_t out;
 
     /* if we have a sample bound, play it */
     if(player_channel->sample != NULL){
+
+        /* get a reference to the current channel for convenience */
+        MOD_Channel* channel = &mod->patterns[mod->pattern_table[player->song_position]].divisions[player->active_division].channels[player_channel->number];
+
+        /* make a copy of the base sample period so we can modify it later, if needed */
+        int sample_period = player_channel->sample_period;
+
+        /* hack to fix a rounding bug from the double -> int conversion */
+        if(player_channel->sample_period_modifier == 0){
+            player_channel->sample_period_modifier = 1<<15;
+        }
+
+        /* modify the sample period (vibrato effects, slides etc) */
+        sample_period = (sample_period * player_channel->sample_period_modifier) / (1<<15);
+
+        sample_period = CLAMP(SAMPLE_PERIOD_MIN, (sample_period), SAMPLE_PERIOD_MAX);
+
+
 
         /* convenience references */
         MOD_Sample* sample = player_channel->sample;
@@ -58,10 +69,11 @@ int32_t MOD_Player_Channel_step(MOD_Player_Channel* player_channel, MOD_Player* 
 
 
         /* advance the sample tracker when needed to get the correct sample period */
-        while(player_channel->tick > sample_period){
+        if(player_channel->tick > sample_period){
 
-            player_channel->tick -= sample_period;
-            player_channel->sample_tracker++;
+            int times = player_channel->tick/sample_period;
+            player_channel->tick -= sample_period*times;
+            player_channel->sample_tracker += times;
 
             /* if this is a repeating sample, repeat when neccessary */
             int repeat_length = MOD_Sample_get_repeat_length(sample)*2;
@@ -128,7 +140,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
         case EFFECT_SLIDE_UP:
             if(x*16+y) player_channel->slide_speed = x*16+y;
             player_channel->slide_period -= player_channel->slide_speed;
-            player_channel->slide_period = MAX(player_channel->slide_period, 113);
+            player_channel->slide_period = MAX(player_channel->slide_period, SAMPLE_PERIOD_MIN);
             player_channel->sample_period_modifier = (1<<15)*player_channel->slide_period/player_channel->sample_period;
             break;
 
@@ -136,7 +148,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
         case EFFECT_SLIDE_DOWN:
             if(x*16+y) player_channel->slide_speed = x*16+y;
             player_channel->slide_period += player_channel->slide_speed;
-            player_channel->slide_period = MIN(player_channel->slide_period, 856);
+            player_channel->slide_period = MIN(player_channel->slide_period, SAMPLE_PERIOD_MAX);
             player_channel->sample_period_modifier = (1<<15)*player_channel->slide_period/player_channel->sample_period;
             break;
 

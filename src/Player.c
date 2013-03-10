@@ -7,6 +7,10 @@ MOD_Player* MOD_Player_create(int sample_rate){
 
     /* malloc... */
     MOD_Player* player = (MOD_Player*) malloc(sizeof(MOD_Player));
+    player->channels[0] = MOD_Player_Channel_create(0);
+    player->channels[1] = MOD_Player_Channel_create(1);
+    player->channels[2] = MOD_Player_Channel_create(2);
+    player->channels[3] = MOD_Player_Channel_create(3);
 
     /* ...init... */
     MOD_Player_reset(player, sample_rate);
@@ -27,10 +31,6 @@ void MOD_Player_reset(MOD_Player* player, int sample_rate){
     player->active_division = 0;
     player->ticks_per_division = 6;
     player->sample_rate = sample_rate;
-    player->channels[0] = MOD_Player_Channel_create(0);
-    player->channels[1] = MOD_Player_Channel_create(1);
-    player->channels[2] = MOD_Player_Channel_create(2);
-    player->channels[3] = MOD_Player_Channel_create(3);
     player->bpm = 125;
     player->microseconds_per_tick = 2500000/player->bpm;
     player->microseconds = 0;
@@ -38,6 +38,11 @@ void MOD_Player_reset(MOD_Player* player, int sample_rate){
     player->division_loop_start = 0;
     player->division_loop_end = 0;
     player->division_loop_count = -1;
+
+    int i;
+    for(i=0;i<4;i++){
+        MOD_Player_Channel_reset(player->channels[i]);
+    }
 }
 
 
@@ -45,9 +50,6 @@ void MOD_Player_reset(MOD_Player* player, int sample_rate){
 void MOD_Player_set_mod(MOD_Player* player, MOD* mod){
     MOD_Player_reset(player, player->sample_rate);
     if(mod != NULL){
-        player->song_position = mod->n_song_positions-1;
-        player->tick = player->ticks_per_division;
-        player->active_division = 63;
         player->mod = mod;
         {int i;for(i=0;i<4;i++){
             player->channels[i]->sample = NULL;
@@ -55,7 +57,7 @@ void MOD_Player_set_mod(MOD_Player* player, MOD* mod){
                 player->channels[i]->sample_volumes[j] = mod->samples[j].volume;
             }}
         }}
-        MOD_Player_tick(player);
+        //MOD_Player_tick(player);
     }
 }
 
