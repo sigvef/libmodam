@@ -112,13 +112,7 @@ void MOD_Player_Channel_process_effect(MOD_Player_Channel* player_channel, MOD_P
     /* init the modifier to 1<<15, aka no modification */
     player_channel->sample_period_modifier = (1<<15);
 
-    int sample_number = 0;
-    {int i;for(i=0;i<31;i++){
-        if(player_channel->sample == &mod->samples[i]){
-            sample_number = i;
-            break;
-        }
-    }}
+    int sample_number = player_channel->sample_number;
 
     switch(e){
 
