@@ -12,12 +12,6 @@ MOD_Player* MOD_Player_create(int sample_rate){
     player->channels[2] = MOD_Player_Channel_create(2);
     player->channels[3] = MOD_Player_Channel_create(3);
 
-    /* ...init... */
-    player->channels[0] = MOD_Player_Channel_create(0);
-    player->channels[1] = MOD_Player_Channel_create(1);
-    player->channels[2] = MOD_Player_Channel_create(2);
-    player->channels[3] = MOD_Player_Channel_create(3);
-
     /* ...reset... */
     MOD_Player_reset(player, sample_rate);
 
@@ -55,15 +49,13 @@ void MOD_Player_reset(MOD_Player* player, int sample_rate){
 /* Binds a mod to a player, effectively resetting the player */
 void MOD_Player_set_mod(MOD_Player* player, MOD* mod){
     MOD_Player_reset(player, player->sample_rate);
+    player->mod = mod;
     if(mod != NULL){
-        player->mod = mod;
         {int i;for(i=0;i<4;i++){
-            player->channels[i]->sample = NULL;
             {int j;for(j=0;j<31;j++){
                 player->channels[i]->sample_volumes[j] = mod->samples[j].volume;
             }}
         }}
-        //MOD_Player_tick(player);
     }
 }
 

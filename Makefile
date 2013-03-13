@@ -10,12 +10,12 @@ all:
 
 avr32:
 	utils/embedify res/* include/modfiles.h
-	avr32-gcc -std=c99 -c src/Player_Channel.c -Iinclude -o obj/Player_Channel.o -O3
-	avr32-gcc -std=c99 -c src/Player.c -Iinclude -o obj/Player.o -O3
-	avr32-gcc -std=c99 -c src/MOD.c -Iinclude -o obj/MOD.o -O3
-	avr32-gcc -std=c99 -c src/MOD_Sample.c -Iinclude -o obj/MOD_Sample.o -O3
-	avr32-gcc -std=c99 -c src/MOD_Channel.c -Iinclude -o obj/MOD_Channel.o -O3
-	avr32-gcc -std=c99 -c src/utils.c -Iinclude -o obj/utils.o -O3
+	avr32-gcc -std=c99 -c src/Player_Channel.c -Iinclude -o obj/Player_Channel.o -O3 -g
+	avr32-gcc -std=c99 -c src/Player.c -Iinclude -o obj/Player.o -O3 -g
+	avr32-gcc -std=c99 -c src/MOD.c -Iinclude -o obj/MOD.o -O3 -g
+	avr32-gcc -std=c99 -c src/MOD_Sample.c -Iinclude -o obj/MOD_Sample.o -O3 -g
+	avr32-gcc -std=c99 -c src/MOD_Channel.c -Iinclude -o obj/MOD_Channel.o -O3 -g
+	avr32-gcc -std=c99 -c src/utils.c -Iinclude -o obj/utils.o -O3 -g
 	avr32-ar rcs lib/libmodam.a obj/*.o
 
 test: all

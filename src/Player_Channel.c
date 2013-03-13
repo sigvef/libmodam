@@ -25,15 +25,18 @@ MOD_Player_Channel* MOD_Player_Channel_create(int channel_number){
     return player_channel;
 }
 
-MOD_Player_Channel_reset(MOD_Player_Channel* player_channel){
+void MOD_Player_Channel_reset(MOD_Player_Channel* player_channel){
     player_channel->sample_tracker = 0;
     player_channel->tick = 0;
     player_channel->volume = 64;
+    player_channel->volume_speed = 0;
+    player_channel->sample_number = 0;
     player_channel->sample = NULL;
     player_channel->sample_data = NULL;
     player_channel->sample_period_modifier = 1<<15;
     player_channel->slide_target = 0;
     player_channel->slide_period = 0;
+    player_channel->slide_speed = 0;
 }
 
 /* The main channel play function. This gets called by the player. */
